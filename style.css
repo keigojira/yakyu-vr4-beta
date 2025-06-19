@@ -306,36 +306,37 @@ main {
     width: 150px; /* Adjust size as needed */
     height: 150px;
     margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    /* Optional: Add a subtle border to represent the diamond path */
+    border: 1px dashed #95a5a6;
+    border-radius: 10px; /* Make it slightly rounded square */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
 .home-plate {
     position: absolute;
     width: 30px;
-    height: 30px;
+    height: 30px; /* Height for the square part */
     background-color: #f1c40f; /* Amber for home plate */
     border: 2px solid #e6b200;
-    /* Home plate is often a pentagon, but for simplicity, let's keep it a square rotated */
-    transform: rotate(45deg);
-    bottom: 0;
-    margin-bottom: -15px; /* Adjust to place it visually below 1st/3rd base line */
+    /* Simulate a pentagon by slightly extending the bottom */
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    bottom: -15px; /* Adjust to place it visually below the square */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 0.7em;
     color: #333;
     z-index: 10;
+    font-weight: bold;
 }
 
+/* Base container is no longer needed for rotation, just a placeholder if structure needs it. */
+/* Removing .base-container styling as it's no longer used for the diamond shape. */
 .base-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transform: rotate(45deg); /* Rotate the entire base container */
-    border: 1px dashed #95a5a6; /* Represent base path */
-    border-radius: 5px; /* Slight rounding for the diamond shape */
+    /* No specific styling needed here anymore if bases are positioned directly. */
+    /* Keeping it for HTML structure, but its visual role is minimal. */
 }
 
 .base {
@@ -351,16 +352,25 @@ main {
     font-size: 0.9em;
     color: #444;
     transition: background-color 0.3s ease, border-color 0.3s ease;
-    /* Counter-rotate each base to appear as a square within the rotated container */
-    transform: rotate(-45deg);
     font-weight: bold;
 }
 
-/* Position bases to form a diamond */
-#firstBase { top: calc(50% - 20px); left: calc(100% - 20px); } /* Adjust for half of base size */
-#secondBase { top: -20px; left: calc(50% - 20px); }
-#thirdBase { top: calc(50% - 20px); left: -20px; }
-
+/* Position bases directly relative to .bases-diamond */
+#firstBase {
+    top: 50%;
+    right: -20px; /* Half of base width to center it on the right edge */
+    transform: translateY(-50%);
+}
+#secondBase {
+    top: -20px; /* Half of base height to center it on the top edge */
+    left: 50%;
+    transform: translateX(-50%);
+}
+#thirdBase {
+    top: 50%;
+    left: -20px; /* Half of base width to center it on the left edge */
+    transform: translateY(-50%);
+}
 
 .base.active {
     background-color: #f1c40f; /* Amber for active bases */
@@ -641,12 +651,13 @@ footer {
     .big-count-display { gap: 40px; }
     .big-count-item .label { font-size: 2.5em; }
     .big-count-item .count { font-size: 10em; }
+    /* Bases adjustments for smaller screens */
     .bases-diamond { width: 120px; height: 120px;}
-    .base, .home-plate { width: 35px; height: 35px; font-size: 0.8em; }
-    .home-plate { margin-bottom: -17px; }
-    #firstBase { top: calc(50% - 17.5px); left: calc(100% - 17.5px); }
-    #secondBase { top: -17.5px; left: calc(50% - 17.5px); }
-    #thirdBase { top: calc(50% - 17.5px); left: -17.5px; }
+    .home-plate { width: 25px; height: 25px; bottom: -12.5px; font-size: 0.6em; }
+    .base { width: 35px; height: 35px; font-size: 0.8em; }
+    #firstBase { right: -17.5px; } /* Half of new base width */
+    #secondBase { top: -17.5px; } /* Half of new base height */
+    #thirdBase { left: -17.5px; } /* Half of new base width */
 }
 
 @media (max-width: 768px) {
@@ -666,12 +677,13 @@ footer {
     .game-info { padding: 15px; }
     #currentInningInfo { font-size: 1.6em; }
     .count-display { font-size: 1.4em; gap: 20px; }
+    /* Bases adjustments for smaller screens */
     .bases-diamond { width: 100px; height: 100px;}
-    .base, .home-plate { width: 30px; height: 30px; font-size: 0.7em;}
-    .home-plate { margin-bottom: -15px; }
-    #firstBase { top: calc(50% - 15px); left: calc(100% - 15px); }
-    #secondBase { top: -15px; left: calc(50% - 15px); }
-    #thirdBase { top: calc(50% - 15px); left: -15px; }
+    .home-plate { width: 20px; height: 20px; bottom: -10px; font-size: 0.5em;}
+    .base { width: 30px; height: 30px; font-size: 0.7em;}
+    #firstBase { right: -15px; } /* Half of new base width */
+    #secondBase { top: -15px; } /* Half of new base height */
+    #thirdBase { left: -15px; } /* Half of new base width */
 
     .control-group { padding: 15px; }
     .control-group h3 { font-size: 1.2em; }
@@ -708,12 +720,13 @@ footer {
     .game-info { padding: 10px; }
     #currentInningInfo { font-size: 1.4em; }
     .count-display { font-size: 1.2em; gap: 15px; }
+    /* Bases adjustments for smallest screens */
     .bases-diamond { width: 80px; height: 80px; }
-    .base, .home-plate { width: 25px; height: 25px; font-size: 0.6em; }
-    .home-plate { margin-bottom: -12.5px; }
-    #firstBase { top: calc(50% - 12.5px); left: calc(100% - 12.5px); }
-    #secondBase { top: -12.5px; left: calc(50% - 12.5px); }
-    #thirdBase { top: calc(50% - 12.5px); left: -12.5px; }
+    .home-plate { width: 15px; height: 15px; bottom: -7.5px; font-size: 0.4em;}
+    .base { width: 25px; height: 25px; font-size: 0.6em;}
+    #firstBase { right: -12.5px; } /* Half of new base width */
+    #secondBase { top: -12.5px; } /* Half of new base height */
+    #thirdBase { left: -12.5px; } /* Half of new base width */
 
     .controls-grid { gap: 15px; }
     .control-group { padding: 10px; }
