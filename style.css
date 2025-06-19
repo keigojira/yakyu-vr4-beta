@@ -316,46 +316,36 @@ main {
     width: 150px; /* Adjust size as needed */
     height: 150px;
     margin: 0 auto;
-    /* Optional: Add a subtle border to represent the diamond path */
-    border: 1px dashed #95a5a6;
-    border-radius: 10px; /* Make it slightly rounded square */
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    /* Remove dashed border as it's not needed with the new base positioning */
 }
 
 .home-plate {
     position: absolute;
-    width: 30px;
-    height: 30px; /* Height for the square part */
+    width: 50px; /* Larger home plate */
+    height: 50px; /* Base for the shape */
     background-color: #f1c40f; /* Amber for home plate */
-    border: 2px solid #e6b200;
-    /* Simulate a pentagon by slightly extending the bottom */
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    bottom: -15px; /* Adjust to place it visually below the square */
+    border: 3px solid #e6b200; /* Thicker border */
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); /* Pentagon shape */
+    bottom: 0px; /* Position at the bottom of the diamond */
     left: 50%;
     transform: translateX(-50%); /* Center horizontally */
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 0.7em;
+    font-size: 0.9em;
     color: #333;
     z-index: 10;
     font-weight: bold;
 }
 
-/* Base container is no longer needed for rotation, just a placeholder if structure needs it. */
-/* Removing .base-container styling as it's no longer used for the diamond shape. */
-.base-container {
-    /* No specific styling needed here anymore if bases are positioned directly. */
-    /* Keeping it for HTML structure, but its visual role is minimal. */
-}
-
 .base {
     position: absolute;
-    width: 40px;
+    width: 40px; /* Square bases */
     height: 40px;
     background-color: #bdc3c7; /* Grey for inactive bases */
-    border: 2px solid #95a5a6;
-    border-radius: 4px;
+    border: 3px solid #95a5a6; /* Thicker border */
+    border-radius: 4px; /* Slightly rounded corners */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -368,18 +358,18 @@ main {
 /* Position bases directly relative to .bases-diamond */
 #firstBase {
     top: 50%;
-    right: -20px; /* Half of base width to center it on the right edge */
-    transform: translateY(-50%);
+    right: 0px; /* Position at the right edge */
+    transform: translateY(-50%) translateX(50%) rotate(45deg); /* Center vertically, move half width out, rotate */
 }
 #secondBase {
-    top: -20px; /* Half of base height to center it on the top edge */
+    top: 0px; /* Position at the top edge */
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(-50%) rotate(45deg); /* Center horizontally, move half height out, rotate */
 }
 #thirdBase {
     top: 50%;
-    left: -20px; /* Half of base width to center it on the left edge */
-    transform: translateY(-50%);
+    left: 0px; /* Position at the left edge */
+    transform: translateY(-50%) translateX(-50%) rotate(45deg); /* Center vertically, move half width out, rotate */
 }
 
 .base.active {
@@ -559,7 +549,7 @@ main {
 }
 
 
-/* Big Count Section - Updated */
+/* Big Count Section - UPDATED */
 #big-count-section {
     display: flex;
     flex-direction: column;
@@ -576,58 +566,80 @@ main {
 .big-count-container {
     display: flex;
     justify-content: center;
-    gap: 50px; /* Adjust gap between B/S/O */
+    align-items: flex-end; /* Align labels at the bottom */
+    gap: 60px; /* Adjust gap between B/S/O */
     margin-bottom: 40px; /* Space between counts and buttons */
     width: 100%;
     flex-wrap: wrap; /* Allow wrapping on small screens */
+    max-width: 900px; /* Limit width for large screens */
 }
 
 .big-count-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    flex-basis: calc(33% - 35px); /* Approximately 1/3 width with gap */
-    min-width: 150px; /* Minimum width for each item */
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 0 25px rgba(255, 255, 255, 0.2); /* White glow */
-    background-color: #333; /* Dark background for each count item */
-    border: 2px solid #555;
+    justify-content: flex-end; /* Push label to bottom, number to top */
+    flex-basis: calc(33.33% - 40px); /* Distribute evenly with gaps */
+    min-width: 180px; /* Minimum width for each item */
+    padding: 0px 10px 15px; /* Padding for visual separation, top padding reduced */
+    border-radius: 5px; /* Slightly rounded corners */
+    box-sizing: border-box;
+    /* Remove individual box-shadow and background-color for a cleaner, unified look */
 }
 
 .big-count-label {
-    font-family: 'Oswald', sans-serif;
-    font-size: 2.8em; /* 調整 */
-    font-weight: 700;
-    color: #f1c40f; /* 明るい黄色 */
-    margin-bottom: 15px;
+    font-family: 'Roboto', sans-serif; /* Use Roboto for labels */
+    font-size: 3em; /* Larger label */
+    font-weight: 900; /* Extra bold */
+    color: #eee; /* Light grey for labels */
+    margin-bottom: 10px; /* Space between label and number */
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
 }
 
 .big-count-value {
-    font-family: 'Oswald', sans-serif;
-    font-size: 10em; /* 調整 */
-    font-weight: 700;
-    color: #fff; /* 白 */
-    text-shadow: 0 0 20px rgba(255,255,255,0.8);
-    line-height: 1;
+    font-family: 'DSEG7-Classic-Mini', monospace; /* Digital font if available, or a bold monospace fallback */
+    font-size: 15em; /* MUCH larger numbers */
+    font-weight: bold;
+    color: #ffcc00; /* Bright yellow for active counts */
+    text-shadow: 0 0 30px rgba(255,204,0,0.8); /* Stronger glow */
+    line-height: 0.9; /* Reduce line height for compact look */
+    min-width: 1.2em; /* Ensure consistent width for digits */
+    text-align: center;
+    position: relative; /* For the "on/off" circle effect */
 }
 
-/* Specific colors for counts like the reference */
-#bigBallsCount, #bigStrikesCount, #bigOutsCount {
-    transition: color 0.2s ease; /* Smooth transition for color change */
+/* Specific colors for counts */
+#bigBallsCount { color: #33ccff; text-shadow: 0 0 30px rgba(51,204,255,0.8); } /* Blue for Balls */
+#bigStrikesCount { color: #ff3300; text-shadow: 0 0 30px rgba(255,51,0,0.8); } /* Red for Strikes */
+#bigOutsCount { color: #ccff33; text-shadow: 0 0 30px rgba(204,255,51,0.8); } /* Green/Yellow for Outs */
+
+/* "On/Off" light effect below the numbers */
+.big-count-value::after {
+    content: '';
+    position: absolute;
+    bottom: -15px; /* Position below the number */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background-color: #333; /* Dark grey when inactive */
+    border: 2px solid #555;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
 }
 
-#bigBallsCount.active { color: #3498db; } /* Blue for Balls */
-#bigStrikesCount.active { color: #e74c3c; } /* Red for Strikes */
-#bigOutsCount.active { color: #95a5a6; } /* Grey for Outs */
+.big-count-value.active::after {
+    background-color: inherit; /* Inherit color from the number */
+    border-color: inherit;
+    box-shadow: 0 0 15px currentColor, inset 0 0 8px currentColor; /* Glow based on its own color */
+}
 
 
 .big-count-controls {
     display: flex;
-    gap: 15px;
+    gap: 25px;
     margin-top: 20px;
     justify-content: center;
     width: 100%;
@@ -635,9 +647,26 @@ main {
 }
 
 .big-count-controls .btn {
-    font-size: 1.2em;
-    padding: 12px 25px;
-    min-width: 100px;
+    font-size: 1.3em;
+    padding: 15px 30px;
+    min-width: 120px;
+    background-color: #555; /* Darker grey buttons */
+    color: white;
+    border: 1px solid #777;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+}
+.big-count-controls .btn:hover {
+    background-color: #777;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.4);
+}
+
+#bigCountResetBtn {
+    background-color: #f39c12; /* Orange for reset */
+    border-color: #d68910;
+}
+#bigCountResetBtn:hover {
+    background-color: #d68910;
 }
 
 
@@ -647,6 +676,7 @@ main {
     font-size: 1.5em;
     padding: 18px 35px;
     margin-top: 40px; /* Space from count controls */
+    border-radius: 10px;
 }
 #backToScoreboardButton:hover {
     background-color: #217dbb;
@@ -682,8 +712,10 @@ footer {
         min-width: unset;
         width: 100%;
     }
-    .big-count-label { font-size: 2.2em; }
-    .big-count-value { font-size: 8em; }
+    /* Big Count adjustments */
+    .big-count-label { font-size: 2.5em; }
+    .big-count-value { font-size: 12em; }
+    .big-count-value::after { width: 20px; height: 20px; bottom: -12px; }
 }
 
 @media (max-width: 992px) {
@@ -697,26 +729,26 @@ footer {
     .big-count-container {
         flex-direction: column; /* Stack counts vertically */
         gap: 30px;
+        max-width: 350px; /* Limit width */
     }
     .big-count-item {
         flex-basis: auto; /* Allow items to take full width */
         min-width: unset;
-        width: 80%; /* Limit width for better appearance */
-        max-width: 300px;
+        width: 100%; /* Take full available width in column layout */
+        padding: 10px 10px 15px;
     }
-    .big-count-label { font-size: 2em; }
-    .big-count-value { font-size: 6em; }
-    .big-count-controls { flex-direction: column; }
-    .big-count-controls .btn { width: 80%; max-width: 200px; }
+    .big-count-label { font-size: 2em; margin-bottom: 5px;}
+    .big-count-value { font-size: 8em; }
+    .big-count-value::after { width: 18px; height: 18px; bottom: -10px; }
+
+    .big-count-controls { flex-direction: column; gap: 15px; }
+    .big-count-controls .btn { width: 80%; max-width: 250px; margin: 0 auto; }
 
 
     /* Bases adjustments for smaller screens */
     .bases-diamond { width: 120px; height: 120px;}
-    .home-plate { width: 25px; height: 25px; bottom: -12.5px; font-size: 0.6em; }
+    .home-plate { width: 40px; height: 40px; }
     .base { width: 35px; height: 35px; font-size: 0.8em; }
-    #firstBase { right: -17.5px; } /* Half of new base width */
-    #secondBase { top: -17.5px; } /* Half of new base height */
-    #thirdBase { left: -17.5px; } /* Half of new base width */
 }
 
 @media (max-width: 768px) {
@@ -738,11 +770,8 @@ footer {
     .count-display { font-size: 1.4em; gap: 20px; }
     /* Bases adjustments for smaller screens */
     .bases-diamond { width: 100px; height: 100px;}
-    .home-plate { width: 20px; height: 20px; bottom: -10px; font-size: 0.5em;}
+    .home-plate { width: 35px; height: 35px; font-size: 0.7em;}
     .base { width: 30px; height: 30px; font-size: 0.7em;}
-    #firstBase { right: -15px; } /* Half of new base width */
-    #secondBase { top: -15px; } /* Half of new base height */
-    #thirdBase { left: -15px; } /* Half of new base width */
 
     .control-group { padding: 15px; }
     .control-group h3 { font-size: 1.2em; }
@@ -758,8 +787,9 @@ footer {
     #gameHistoryList li { padding: 12px 15px; }
 
     /* Big Count Layout for smaller screens */
-    .big-count-label { font-size: 1.8em; }
-    .big-count-value { font-size: 5em; }
+    .big-count-label { font-size: 1.5em; }
+    .big-count-value { font-size: 6em; }
+    .big-count-value::after { width: 15px; height: 15px; bottom: -8px; }
 
 
 }
@@ -784,11 +814,8 @@ footer {
     .count-display { font-size: 1.2em; gap: 15px; }
     /* Bases adjustments for smallest screens */
     .bases-diamond { width: 80px; height: 80px; }
-    .home-plate { width: 15px; height: 15px; bottom: -7.5px; font-size: 0.4em;}
+    .home-plate { width: 28px; height: 28px; font-size: 0.6em;}
     .base { width: 25px; height: 25px; font-size: 0.6em;}
-    #firstBase { right: -12.5px; } /* Half of new base width */
-    #secondBase { top: -12.5px; } /* Half of new base height */
-    #thirdBase { left: -12.5px; } /* Half of new base width */
 
     .controls-grid { gap: 15px; }
     .control-group { padding: 10px; }
@@ -807,8 +834,9 @@ footer {
     #clearHistoryButton { padding: 10px 15px; font-size: 1em; margin-top: 15px; }
 
     /* Big Count Layout for smallest screens */
-    .big-count-label { font-size: 1.5em; }
+    .big-count-label { font-size: 1.2em; }
     .big-count-value { font-size: 4em; }
+    .big-count-value::after { width: 12px; height: 12px; bottom: -6px; }
     .big-count-controls .btn { width: 90%; max-width: 150px; }
 
 }
