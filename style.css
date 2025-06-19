@@ -317,7 +317,6 @@ main {
     height: 150px;
     margin: 0 auto;
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
-    /* Remove dashed border as it's not needed with the new base positioning */
 }
 
 .home-plate {
@@ -549,14 +548,14 @@ main {
 }
 
 
-/* Big Count Section - UPDATED */
+/* Big Count Section - Updated to match the first image example */
 #big-count-section {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh; /* Full viewport height */
-    background: #000; /* 黒背景 */
+    background: #000; /* Pure black background */
     color: white;
     padding: 20px;
     text-align: center;
@@ -566,81 +565,61 @@ main {
 .big-count-container {
     display: flex;
     justify-content: center;
-    align-items: flex-end; /* Align labels at the bottom */
-    gap: 60px; /* Adjust gap between B/S/O */
-    margin-bottom: 40px; /* Space between counts and buttons */
+    align-items: center; /* Align items to center vertically */
+    gap: 80px; /* Increased gap for more separation */
+    margin-bottom: 40px;
     width: 100%;
-    flex-wrap: wrap; /* Allow wrapping on small screens */
-    max-width: 900px; /* Limit width for large screens */
+    flex-wrap: wrap;
+    max-width: 1000px; /* Adjusted max-width */
 }
 
 .big-count-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-end; /* Push label to bottom, number to top */
-    flex-basis: calc(33.33% - 40px); /* Distribute evenly with gaps */
-    min-width: 180px; /* Minimum width for each item */
-    padding: 0px 10px 15px; /* Padding for visual separation, top padding reduced */
-    border-radius: 5px; /* Slightly rounded corners */
+    justify-content: center; /* Center items vertically */
+    flex-basis: calc(33.33% - 60px); /* Distribute evenly with larger gaps */
+    min-width: 200px; /* Minimum width for each item */
+    padding: 20px 10px; /* Added vertical padding */
     box-sizing: border-box;
-    /* Remove individual box-shadow and background-color for a cleaner, unified look */
 }
 
 .big-count-label {
-    font-family: 'Roboto', sans-serif; /* Use Roboto for labels */
-    font-size: 3em; /* Larger label */
-    font-weight: 900; /* Extra bold */
+    font-family: 'Oswald', sans-serif; /* Use Oswald for labels */
+    font-size: 2.8em; /* Adjusted label size */
+    font-weight: 700; /* Bold */
     color: #eee; /* Light grey for labels */
-    margin-bottom: 10px; /* Space between label and number */
+    margin-bottom: 10px;
     text-transform: uppercase;
     letter-spacing: 2px;
 }
 
 .big-count-value {
     font-family: 'DSEG7-Classic-Mini', monospace; /* Digital font if available, or a bold monospace fallback */
-    font-size: 15em; /* MUCH larger numbers */
+    font-size: 18em; /* HUGE numbers for primary display */
     font-weight: bold;
-    color: #ffcc00; /* Bright yellow for active counts */
-    text-shadow: 0 0 30px rgba(255,204,0,0.8); /* Stronger glow */
+    color: #00FF00; /* Bright green for count numbers */
+    text-shadow: 0 0 40px rgba(0,255,0,0.8), 0 0 60px rgba(0,255,0,0.6); /* Stronger green glow */
     line-height: 0.9; /* Reduce line height for compact look */
     min-width: 1.2em; /* Ensure consistent width for digits */
     text-align: center;
-    position: relative; /* For the "on/off" circle effect */
 }
 
-/* Specific colors for counts */
-#bigBallsCount { color: #33ccff; text-shadow: 0 0 30px rgba(51,204,255,0.8); } /* Blue for Balls */
-#bigStrikesCount { color: #ff3300; text-shadow: 0 0 30px rgba(255,51,0,0.8); } /* Red for Strikes */
-#bigOutsCount { color: #ccff33; text-shadow: 0 0 30px rgba(204,255,51,0.8); } /* Green/Yellow for Outs */
-
-/* "On/Off" light effect below the numbers */
+/* Remove ::after pseudo-element for the "on/off" light effect as it's not in the reference image */
 .big-count-value::after {
-    content: '';
-    position: absolute;
-    bottom: -15px; /* Position below the number */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background-color: #333; /* Dark grey when inactive */
-    border: 2px solid #555;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+    display: none;
 }
 
-.big-count-value.active::after {
-    background-color: inherit; /* Inherit color from the number */
-    border-color: inherit;
-    box-shadow: 0 0 15px currentColor, inset 0 0 8px currentColor; /* Glow based on its own color */
+/* No specific active colors needed for numbers, as they are always green */
+#bigBallsCount, #bigStrikesCount, #bigOutsCount {
+    color: #00FF00; /* Always green */
+    text-shadow: 0 0 40px rgba(0,255,0,0.8), 0 0 60px rgba(0,255,0,0.6);
 }
-
 
 .big-count-controls {
     display: flex;
     gap: 25px;
-    margin-top: 20px;
+    margin-top: 30px; /* Increased margin from counts */
     justify-content: center;
     width: 100%;
     flex-wrap: wrap;
@@ -649,33 +628,33 @@ main {
 .big-count-controls .btn {
     font-size: 1.3em;
     padding: 15px 30px;
-    min-width: 120px;
-    background-color: #555; /* Darker grey buttons */
+    min-width: 140px; /* Slightly wider buttons */
+    background-color: #333; /* Dark grey buttons */
     color: white;
-    border: 1px solid #777;
+    border: 2px solid #555; /* Slightly visible border */
     box-shadow: 0 5px 10px rgba(0,0,0,0.3);
 }
 .big-count-controls .btn:hover {
-    background-color: #777;
+    background-color: #555;
     transform: translateY(-3px);
     box-shadow: 0 8px 15px rgba(0,0,0,0.4);
 }
 
 #bigCountResetBtn {
-    background-color: #f39c12; /* Orange for reset */
-    border-color: #d68910;
+    background-color: #8B0000; /* Dark Red for reset */
+    border-color: #B22222;
 }
 #bigCountResetBtn:hover {
-    background-color: #d68910;
+    background-color: #B22222;
 }
 
 
 #backToScoreboardButton {
-    background-color: #3498db; /* Blue */
+    background-color: #3498db; /* Blue for consistency */
     color: white;
     font-size: 1.5em;
     padding: 18px 35px;
-    margin-top: 40px; /* Space from count controls */
+    margin-top: 50px; /* More space from count controls */
     border-radius: 10px;
 }
 #backToScoreboardButton:hover {
@@ -714,8 +693,7 @@ footer {
     }
     /* Big Count adjustments */
     .big-count-label { font-size: 2.5em; }
-    .big-count-value { font-size: 12em; }
-    .big-count-value::after { width: 20px; height: 20px; bottom: -12px; }
+    .big-count-value { font-size: 15em; }
 }
 
 @media (max-width: 992px) {
@@ -728,21 +706,20 @@ footer {
     /* Big Count Layout for smaller screens */
     .big-count-container {
         flex-direction: column; /* Stack counts vertically */
-        gap: 30px;
-        max-width: 350px; /* Limit width */
+        gap: 40px;
+        max-width: 400px; /* Limit width */
     }
     .big-count-item {
         flex-basis: auto; /* Allow items to take full width */
         min-width: unset;
         width: 100%; /* Take full available width in column layout */
-        padding: 10px 10px 15px;
+        padding: 15px 10px;
     }
     .big-count-label { font-size: 2em; margin-bottom: 5px;}
-    .big-count-value { font-size: 8em; }
-    .big-count-value::after { width: 18px; height: 18px; bottom: -10px; }
+    .big-count-value { font-size: 10em; }
 
     .big-count-controls { flex-direction: column; gap: 15px; }
-    .big-count-controls .btn { width: 80%; max-width: 250px; margin: 0 auto; }
+    .big-count-controls .btn { width: 80%; max-width: 280px; margin: 0 auto; }
 
 
     /* Bases adjustments for smaller screens */
@@ -787,9 +764,8 @@ footer {
     #gameHistoryList li { padding: 12px 15px; }
 
     /* Big Count Layout for smaller screens */
-    .big-count-label { font-size: 1.5em; }
-    .big-count-value { font-size: 6em; }
-    .big-count-value::after { width: 15px; height: 15px; bottom: -8px; }
+    .big-count-label { font-size: 1.8em; }
+    .big-count-value { font-size: 8em; }
 
 
 }
@@ -834,9 +810,8 @@ footer {
     #clearHistoryButton { padding: 10px 15px; font-size: 1em; margin-top: 15px; }
 
     /* Big Count Layout for smallest screens */
-    .big-count-label { font-size: 1.2em; }
-    .big-count-value { font-size: 4em; }
-    .big-count-value::after { width: 12px; height: 12px; bottom: -6px; }
+    .big-count-label { font-size: 1.5em; }
+    .big-count-value { font-size: 6em; }
     .big-count-controls .btn { width: 90%; max-width: 150px; }
 
 }
