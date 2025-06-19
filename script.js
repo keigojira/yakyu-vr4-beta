@@ -74,9 +74,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameHistoryList = document.getElementById('gameHistoryList');
     const clearHistoryButton = document.getElementById('clearHistoryButton');
 
+    // Big Count Specific Elements
     const bigBallsCount = document.getElementById('bigBallsCount');
     const bigStrikesCount = document.getElementById('bigStrikesCount');
     const bigOutsCount = document.getElementById('bigOutsCount');
+    const bigBallsPlusBtn = document.getElementById('bigBallsPlusBtn');
+    const bigBallsMinusBtn = document.getElementById('bigBallsMinusBtn');
+    const bigStrikesPlusBtn = document.getElementById('bigStrikesPlusBtn');
+    const bigStrikesMinusBtn = document.getElementById('bigStrikesMinusBtn');
+    const bigOutsPlusBtn = document.getElementById('bigOutsPlusBtn');
+    const bigOutsMinusBtn = document.getElementById('bigOutsMinusBtn');
+    const bigCountResetBtn = document.getElementById('bigCountResetBtn');
     const backToScoreboardButton = document.getElementById('backToScoreboardButton');
 
 
@@ -203,6 +211,16 @@ document.addEventListener('DOMContentLoaded', () => {
         firstBase.classList.toggle('active', bases.first);
         secondBase.classList.toggle('active', bases.second);
         thirdBase.classList.toggle('active', bases.third);
+
+        // Update Big Count display
+        bigBallsCount.textContent = balls;
+        bigStrikesCount.textContent = strikes;
+        bigOutsCount.textContent = outs;
+
+        // Set active class for Big Count (for color change)
+        bigBallsCount.classList.toggle('active', balls > 0);
+        bigStrikesCount.classList.toggle('active', strikes > 0);
+        bigOutsCount.classList.toggle('active', outs > 0);
     }
 
     // Function to populate player name inputs based on count
@@ -419,7 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (bases.first) {
                 if (bases.second) {
                     if (bases.third) {
-                        // All bases loaded, runner on 3rd scores
+                        // All bases loaded, runner from 3rd scores
                         // Handled above.
                     } else {
                         // 1st and 2nd occupied, runner from 2nd moves to 3rd
@@ -902,9 +920,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showBigCountButton.addEventListener('click', () => {
         scoreboardSection.classList.add('hidden');
         bigCountSection.classList.remove('hidden');
-        bigBallsCount.textContent = balls;
-        bigStrikesCount.textContent = strikes;
-        bigOutsCount.textContent = outs;
+        updateScoreboard(); // Ensure big count values are updated
     });
     inningGameControls.appendChild(showBigCountButton);
 
@@ -922,6 +938,73 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Big Count Controls Event Listeners
+    bigBallsPlusBtn.addEventListener('click', () => {
+        if (balls < 3) { // Max 3 balls before walk
+            balls++;
+            addGameAction(`大画面: ボール追加`);
+        } else {
+            balls = 0; // Reset for next count sequence
+            addGameAction(`大画面: ボール追加 (四球自動処理)`);
+            moveRunners('walk');
+            currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
+            populateBatterSelect();
+            updatePlayerStatsTables();
+        }
+        strikes = 0; // Reset strikes when ball or strike is added
+        updateScoreboard();
+    });
+
+    bigBallsMinusBtn.addEventListener('click', () => {
+        if (balls > 0) {
+            balls--;
+            addGameAction(`大画面: ボール削除`);
+        }
+        updateScoreboard();
+    });
+
+    bigStrikesPlusBtn.addEventListener('click', () => {
+        if (strikes < 2) { // Max 2 strikes before strikeout
+            strikes++;
+            addGameAction(`大画面: ストライク追加`);
+        } else {
+            strikes = 0; // Reset for next count sequence
+            addGameAction(`大画面: ストライク追加 (三振自動処理)`);
+            addOut();
+            currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
+            populateBatterSelect();
+            updatePlayerStatsTables();
+        }
+        balls = 0; // Reset balls when ball or strike is added
+        updateScoreboard();
+    });
+
+    bigStrikesMinusBtn.addEventListener('click', () => {
+        if (strikes > 0) {
+            strikes--;
+            addGameAction(`大画面: ストライク削除`);
+        }
+        updateScoreboard();
+    });
+
+    bigOutsPlusBtn.addEventListener('click', () => {
+        addOut(); // Uses existing addOut logic which handles 3 outs
+        updateScoreboard();
+        // No need to reset balls/strikes here, addOut already handles it via handleThreeOuts
+    });
+
+    bigOutsMinusBtn.addEventListener('click', () => {
+        if (outs > 0) {
+            outs--;
+            addGameAction(`大画面: アウト削除`);
+        }
+        updateScoreboard();
+    });
+
+    bigCountResetBtn.addEventListener('click', () => {
+        resetCount(); // Resets balls and strikes
+        addGameAction(`大画面: カウントリセット`);
+    });
 
     // --- Initialization ---
     populatePlayerInputs(); // Initial population of player inputs
