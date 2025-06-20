@@ -1,1012 +1,994 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // UI Elements
-    const setupSection = document.getElementById('setup-section');
-    const scoreboardSection = document.getElementById('scoreboard-section');
-    const historySection = document.getElementById('history-section');
-    const bigCountSection = document.getElementById('big-count-section');
+    // --- UI要素の取得 ---
+    const elements = {
+        // 設定セクション
+        setupSection: document.getElementById('setup-section'),
+        inningCountInput: document.getElementById('inningCount'),
+        awayTeamNameInput: document.getElementById('awayTeamNameInput'),
+        homeTeamNameInput: document.getElementById('homeTeamNameInput'),
+        awayPlayersDiv: document.getElementById('awayPlayers'),
+        homePlayersDiv: document.getElementById('homePlayers'),
+        startGameButton: document.getElementById('startGameButton'),
 
-    const awayTeamNameInput = document.getElementById('awayTeamNameInput');
-    const homeTeamNameInput = document.getElementById('homeTeamNameInput');
-    const playerCountInput = document.getElementById('playerCountInput');
-    const awayPlayersDiv = document.getElementById('awayPlayers');
-    const homePlayersDiv = document.getElementById('homePlayers');
-    const startGameButton = document.getElementById('startGameButton');
+        // スコアボード＆情報セクション
+        gameSection: document.getElementById('game-section'),
+        awayTeamNameDisplay: document.getElementById('awayTeamNameDisplay'),
+        homeTeamNameDisplay: document.getElementById('homeTeamNameDisplay'),
+        awayScoreboardRow: document.getElementById('awayScoreboardRow'),
+        homeScoreboardRow: document.getElementById('homeScoreboardRow'),
+        currentInningInfo: document.getElementById('currentInningInfo'),
+        ballsCountElement: document.getElementById('ballsCount'),
+        strikesCountElement: document.getElementById('strikesCount'),
+        outsCountElement: document.getElementById('outsCount'),
+        firstBase: document.getElementById('firstBase'),
+        secondBase: document.getElementById('secondBase'),
+        thirdBase: document.getElementById('thirdBase'),
 
-    const awayTeamLabel = document.getElementById('awayTeamLabel');
-    const homeTeamLabel = document.getElementById('homeTeamLabel');
-    const awayTotalScoreElem = document.getElementById('awayTotalScore');
-    const awayTotalHElem = document.getElementById('awayTotalH');
-    const awayTotalEElem = document.getElementById('awayTotalE');
-    const awayTeamAvgElem = document.getElementById('awayTeamAvg');
-    const awayTeamObpElem = document.getElementById('awayTeamObp');
-    const homeTotalScoreElem = document.getElementById('homeTotalScore');
-    const homeTotalHElem = document.getElementById('homeTotalH');
-    const homeTotalEElem = document.getElementById('homeTotalE');
-    const homeTeamAvgElem = document.getElementById('homeTeamAvg');
-    const homeTeamObpElem = document.getElementById('homeTeamObp');
+        // コントロールパネル
+        currentBatterSelect: document.getElementById('currentBatterSelect'),
+        singleBtn: document.getElementById('singleBtn'),
+        doubleBtn: document.getElementById('doubleBtn'),
+        tripleBtn: document.getElementById('tripleBtn'),
+        homeRunBtn: document.getElementById('homeRunBtn'),
+        walkBtn: document.getElementById('walkBtn'),
+        strikeOutBtn: document.getElementById('strikeOutBtn'),
+        outBtn: document.getElementById('outBtn'),
+        sacrificeBtn: document.getElementById('sacrificeBtn'),
+        errorBtn: document.getElementById('errorBtn'),
+        stealBtn: document.getElementById('stealBtn'),
+        advanceRunnerBtn: document.getElementById('advanceRunnerBtn'),
+        forceOutRunnerBtn: document.getElementById('forceOutRunner'),
+        returnRunnerBtn: document.getElementById('returnRunnerBtn'),
+        clearBasesBtn: document.getElementById('clearBasesBtn'),
+        nextInningBtn: document.getElementById('nextInningBtn'),
+        undoLastActionBtn: document.getElementById('undoLastActionBtn'),
+        endGameBtn: document.getElementById('endGameBtn'),
 
-    const scoreboardHeader = document.querySelector('.scoreboard-header');
-    const awayTeamRow = document.querySelector('.scoreboard-row.away-team');
-    const homeTeamRow = document.querySelector('.scoreboard-row.home-team');
-
-    const currentInningInfo = document.getElementById('currentInningInfo');
-    const ballsInfo = document.getElementById('ballsInfo');
-    const strikesInfo = document.getElementById('strikesInfo');
-    const outsInfo = document.getElementById('outsInfo');
-
-    const firstBase = document.getElementById('firstBase');
-    const secondBase = document.getElementById('secondBase');
-    const thirdBase = document.getElementById('thirdBase');
-
-    const currentBatterSelect = document.getElementById('currentBatterSelect');
-
-    const batterOutButton = document.getElementById('batterOut');
-    const batterSingleButton = document.getElementById('batterSingle');
-    const batterDoubleButton = document.getElementById('batterDouble');
-    const batterTripleButton = document.getElementById('batterTriple');
-    const batterHomeRunButton = document.getElementById('batterHomeRun');
-    const batterWalkButton = document.getElementById('batterWalk');
-    const batterHBPButton = document.getElementById('batterHBP');
-    const batterSacrificeButton = document.getElementById('batterSacrifice');
-    const batterErrorButton = document.getElementById('batterError');
-
-    const addRunButton = document.getElementById('addRun');
-    const subtractRunButton = document.getElementById('subtractRun');
-    const addErrorButton = document.getElementById('addError');
-    const subtractErrorButton = document.getElementById('subtractError');
-    const clearBasesButton = document.getElementById('clearBases');
-
-    const addBallButton = document.getElementById('addBall');
-    const addStrikeButton = document.getElementById('addStrike');
-    const resetCountButton = document.getElementById('resetCount');
-
-    const nextInningButton = document.getElementById('nextInning');
-    const switchSidesButton = document.getElementById('switchSides');
-    const endGameButton = document.getElementById('endGame');
-    const resetGameButton = document.getElementById('resetGame');
-    let showBigCountButton = null; // Will be created dynamically
-
-    const awayPlayerStatsTable = document.getElementById('awayPlayerStatsTable');
-    const homePlayerStatsTable = document.getElementById('homePlayerStatsTable');
-    const awayPlayerStatsTeamName = document.getElementById('awayPlayerStatsTeamName');
-    const homePlayerStatsTeamName = document.getElementById('homePlayerStatsTeamName');
-
-    const gameHistoryList = document.getElementById('gameHistoryList');
-    const clearHistoryButton = document.getElementById('clearHistoryButton');
-
-    // Big Count Specific Elements
-    const bigBallsCount = document.getElementById('bigBallsCount');
-    const bigStrikesCount = document.getElementById('bigStrikesCount');
-    const bigOutsCount = document.getElementById('bigOutsCount');
-    const bigBallsPlusBtn = document.getElementById('bigBallsPlusBtn');
-    const bigBallsMinusBtn = document.getElementById('bigBallsMinusBtn');
-    const bigStrikesPlusBtn = document.getElementById('bigStrikesPlusBtn');
-    const bigStrikesMinusBtn = document.getElementById('bigStrikesMinusBtn');
-    const bigOutsPlusBtn = document.getElementById('bigOutsPlusBtn');
-    const bigOutsMinusBtn = document.getElementById('bigOutsMinusBtn');
-    const bigCountResetBtn = document.getElementById('bigCountResetBtn');
-    const backToScoreboardButton = document.getElementById('backToScoreboardButton');
+        // 選手成績テーブル
+        awayPlayerStatsBody: document.getElementById('awayPlayerStatsBody'),
+        homePlayerStatsBody: document.getElementById('homePlayerStatsBody'),
+        awayTeamStatsHeader: document.getElementById('awayTeamStatsHeader'),
+        homeTeamStatsHeader: document.getElementById('homeTeamStatsHeader'),
 
 
-    // Game State Variables
-    let currentInning = 1;
-    let isTopInning = true; // true for top, false for bottom
-    let awayTeamScore = 0;
-    let homeTeamScore = 0;
-    let balls = 0;
-    let strikes = 0;
-    let outs = 0;
-    let bases = {
-        first: false,
-        second: false,
-        third: false
+        // 履歴セクション
+        historySection: document.getElementById('history-section'),
+        gameHistoryList: document.getElementById('gameHistoryList'),
+        clearHistoryButton: document.getElementById('clearHistoryButton'),
+        backToSetupButton: document.getElementById('backToSetupButton')
     };
-    let awayTeamPlayers = [];
-    let homeTeamPlayers = [];
-    let currentBatterIndex = 0;
-    let currentBattingTeam = ''; // 'away' or 'home'
-    const maxInnings = 9; // Default max innings
 
-    let gameHistory = []; // Stores completed game summaries
-    let currentGameActions = []; // Stores actions within the current game
+    // --- ゲームの状態変数 ---
+    let gameState = {
+        totalInnings: 9,
+        currentInning: 1,
+        isTopInning: true, // true: 表, false: 裏
 
-    // Team and Player Data Structure
-    let gameData = {
-        away: {
-            name: 'ビジターズ',
-            score: 0,
-            hits: 0,
-            errors: 0,
-            innings: {}, // {1: 0, 2: 1, ...}
-            players: []
+        balls: 0,
+        strikes: 0,
+        outs: 0,
+
+        runners: {
+            first: null, // {id: 'player_id', name: 'player_name', index: player_index}
+            second: null,
+            third: null
         },
-        home: {
-            name: 'ホームズ',
-            score: 0,
-            hits: 0,
-            errors: 0,
-            innings: {},
-            players: []
+
+        awayTeam: { name: 'ビジターズ', players: [], runs: 0, hits: 0, errors: 0, inningScores: [] },
+        homeTeam: { name: 'ホームズ', players: [], runs: 0, hits: 0, errors: 0, inningScores: [] },
+
+        currentTeam: null,
+        opposingTeam: null,
+        currentBatterIndex: 0, // 現在の打者のインデックス (0始まり)
+
+        gameHistory: [], // 試合の全操作履歴 (元に戻す機能用)
+        actionHistory: [] // 直近の操作履歴 (元に戻す機能用)
+    };
+
+    // プレイヤーオブジェクトのプロトタイプ
+    const playerPrototype = {
+        id: '',
+        name: '',
+        atBats: 0,        // 打数 (打率計算の分母 - 四死球、犠打/飛は含めない)
+        hits: 0,          // 安打 (打率計算の分子)
+        rbi: 0,
+        runsScored: 0,
+        walks: 0,         // 四球
+        strikeOuts: 0,
+        singles: 0,
+        doubles: 0,
+        triples: 0,
+        homeRuns: 0,
+        sacrifices: 0,    // 犠打/犠飛
+        // hitByPitch: 0, // 死球 (現時点では未実装だが、追加するならここに)
+    };
+
+    // --- ユーティリティ関数 ---
+    const generatePlayerId = (teamPrefix, index) => `${teamPrefix}_player_${index + 1}`;
+
+    /**
+     * プレイヤーの打率を計算します。
+     * 打率は (安打数 / 打数) で計算され、小数点以下3桁で表示されます。
+     * 打数が0の場合は '---' を返します。
+     * @param {Object} player - プレイヤーオブジェクト
+     * @returns {string} 打率の文字列 (.XXX形式)
+     */
+    const calculateBattingAverage = (player) => {
+        if (player.atBats === 0) {
+            return '---';
+        }
+        const avg = player.hits / player.atBats;
+        return avg.toFixed(3).substring(1); // 例: 0.344 -> .344
+    };
+
+    // --- UI更新関数 ---
+    const updateScoreboard = () => {
+        const { totalInnings, currentInning, isTopInning, awayTeam, homeTeam, balls, strikes, outs, runners } = gameState;
+
+        // スコアボードヘッダー（イニング数）を更新
+        const scoreboardHeader = document.querySelector('.scoreboard-header');
+        // 既存のイニング列をクリア（チームラベルとRHEは残す）
+        scoreboardHeader.querySelectorAll('.inning-col').forEach(el => el.remove());
+
+        // イニング列の生成
+        for (let i = 1; i <= totalInnings; i++) {
+            const inningCol = document.createElement('div');
+            inningCol.classList.add('inning-col');
+            inningCol.textContent = i;
+            // R, H, Eの前にイニングを追加
+            scoreboardHeader.insertBefore(inningCol, scoreboardHeader.querySelector('.rhe-header'));
+        }
+
+        // チームごとのスコア表示
+        const updateTeamScoreRow = (team, rowElement) => {
+            // 既存のイニングスコアをクリア
+            rowElement.querySelectorAll('.inning-score').forEach(el => el.remove());
+
+            // イニングスコアの追加
+            for (let i = 0; i < totalInnings; i++) {
+                const inningScoreDiv = document.createElement('div');
+                inningScoreDiv.classList.add('inning-score');
+                // undefined の場合は空文字列を表示
+                inningScoreDiv.textContent = team.inningScores[i] !== undefined ? team.inningScores[i] : '';
+                rowElement.insertBefore(inningScoreDiv, rowElement.querySelector('.rhe-score'));
+            }
+
+            // RHEの更新
+            rowElement.querySelector('.rhe-score.r').textContent = team.runs;
+            rowElement.querySelector('.rhe-score.h').textContent = team.hits;
+            rowElement.querySelector('.rhe-score.e').textContent = team.errors;
+        };
+
+        updateTeamScoreRow(awayTeam, elements.awayScoreboardRow);
+        updateTeamScoreRow(homeTeam, elements.homeScoreboardRow);
+
+        // チーム名表示の更新
+        elements.awayTeamNameDisplay.textContent = awayTeam.name;
+        elements.homeTeamNameDisplay.textContent = homeTeam.name;
+        elements.awayTeamStatsHeader.textContent = `${awayTeam.name}成績`;
+        elements.homeTeamStatsHeader.textContent = `${homeTeam.name}成績`;
+
+        // 現在のイニング情報
+        elements.currentInningInfo.textContent = `${currentInning}回${isTopInning ? '表' : '裏'}`;
+
+        // カウント表示
+        elements.ballsCountElement.textContent = balls;
+        elements.strikesCountElement.textContent = strikes;
+        elements.outsCountElement.textContent = outs;
+
+        // 塁上表示
+        elements.firstBase.classList.toggle('active', runners.first !== null);
+        elements.secondBase.classList.toggle('active', runners.second !== null);
+        elements.thirdBase.classList.toggle('active', runners.third !== null);
+
+        // 選手成績テーブルの更新
+        updatePlayerStatsTable(awayTeam.players, elements.awayPlayerStatsBody);
+        updatePlayerStatsTable(homeTeam.players, elements.homePlayerStatsBody);
+    };
+
+    /**
+     * 現在の打者選択ドロップダウンを更新します。
+     */
+    const updateCurrentBatterSelect = () => {
+        elements.currentBatterSelect.innerHTML = '';
+        if (gameState.currentTeam && gameState.currentTeam.players.length > 0) {
+            gameState.currentTeam.players.forEach((player, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${index + 1}. ${player.name}`;
+                elements.currentBatterSelect.appendChild(option);
+            });
+            elements.currentBatterSelect.value = gameState.currentBatterIndex;
         }
     };
 
-    // --- Utility Functions ---
-
-    // Function to calculate batting average (AVG)
-    function calculateAVG(hits, atBats) {
-        if (atBats === 0) return '.000';
-        return (hits / atBats).toFixed(3).replace(/^0\./, '.');
-    }
-
-    // Function to calculate on-base percentage (OBP)
-    function calculateOBP(hits, walks, hbp, atBats, sacrificeFlies) {
-        const numerator = hits + walks + hbp;
-        const denominator = atBats + walks + hbp + sacrificeFlies;
-        if (denominator === 0) return '.000';
-        return (numerator / denominator).toFixed(3).replace(/^0\./, '.');
-    }
-
-    // Function to save game history to local storage
-    function saveGameHistory() {
-        localStorage.setItem('baseballGameHistory', JSON.stringify(gameHistory));
-    }
-
-    // Function to load game history from local storage
-    function loadGameHistory() {
-        const storedHistory = localStorage.getItem('baseballGameHistory');
-        if (storedHistory) {
-            gameHistory = JSON.parse(storedHistory);
-            renderGameHistory();
-        }
-    }
-
-    // Function to add an action to current game history
-    function addGameAction(action) {
-        const activeTeam = isTopInning ? gameData.away.name : gameData.home.name;
-        const currentBatter = currentBatterSelect.value;
-        const inningText = `${currentInning}回${isTopInning ? '表' : '裏'}`;
-        currentGameActions.push(`[${inningText}] ${activeTeam} (${currentBatter}): ${action} (B:${balls} S:${strikes} O:${outs}) 1B:${bases.first?'有':'無'} 2B:${bases.second?'有':'無'} 3B:${bases.third?'有':'無'}`);
-    }
-
-    // Function to update the scoreboard display
-    function updateScoreboard() {
-        // Update team names
-        awayTeamLabel.textContent = gameData.away.name;
-        homeTeamLabel.textContent = gameData.home.name;
-
-        // Update total scores, hits, errors
-        awayTotalScoreElem.textContent = gameData.away.score;
-        awayTotalHElem.textContent = gameData.away.hits;
-        awayTotalEElem.textContent = gameData.away.errors;
-        homeTotalScoreElem.textContent = gameData.home.score;
-        homeTotalHElem.textContent = gameData.home.hits;
-        homeTotalEElem.textContent = gameData.home.errors;
-
-        // Update batting average and on-base percentage for teams
-        const awayTeamAtBats = gameData.away.players.reduce((sum, p) => sum + p.atBats, 0);
-        const awayTeamHits = gameData.away.players.reduce((sum, p) => sum + p.hits, 0);
-        const awayTeamWalks = gameData.away.players.reduce((sum, p) => sum + p.walks, 0);
-        const awayTeamHBP = gameData.away.players.reduce((sum, p) => sum + p.hbp, 0);
-        const awayTeamSacrifices = gameData.away.players.reduce((sum, p) => sum + p.sacrifices, 0);
-        awayTeamAvgElem.textContent = calculateAVG(awayTeamHits, awayTeamAtBats);
-        awayTeamObpElem.textContent = calculateOBP(awayTeamHits, awayTeamWalks, awayTeamHBP, awayTeamAtBats, awayTeamSacrifices);
-
-        const homeTeamAtBats = gameData.home.players.reduce((sum, p) => sum + p.atBats, 0);
-        const homeTeamHits = gameData.home.players.reduce((sum, p) => sum + p.hits, 0);
-        const homeTeamWalks = gameData.home.players.reduce((sum, p) => sum + p.walks, 0);
-        const homeTeamHBP = gameData.home.players.reduce((sum, p) => sum + p.hbp, 0);
-        const homeTeamSacrifices = gameData.home.players.reduce((sum, p) => sum + p.sacrifices, 0);
-        homeTeamAvgElem.textContent = calculateAVG(homeTeamHits, homeTeamAtBats);
-        homeTeamObpElem.textContent = calculateOBP(homeTeamHits, homeTeamWalks, homeTeamHBP, homeTeamAtBats, homeTeamSacrifices);
-
-        // Update current inning and top/bottom
-        currentInningInfo.textContent = `${currentInning}回${isTopInning ? '表' : '裏'}`;
-
-        // Update Balls, Strikes, Outs
-        ballsInfo.textContent = `B: ${balls}`;
-        strikesInfo.textContent = `S: ${strikes}`;
-        outsInfo.textContent = `O: ${outs}`;
-
-        // Update bases display
-        firstBase.classList.toggle('active', bases.first);
-        secondBase.classList.toggle('active', bases.second);
-        thirdBase.classList.toggle('active', bases.third);
-
-        // Update Big Count display
-        bigBallsCount.textContent = balls;
-        bigStrikesCount.textContent = strikes;
-        bigOutsCount.textContent = outs;
-
-        // Set active class for Big Count (for color change)
-        bigBallsCount.classList.toggle('active', balls > 0);
-        bigStrikesCount.classList.toggle('active', strikes > 0);
-        bigOutsCount.classList.toggle('active', outs > 0);
-    }
-
-    // Function to populate player name inputs based on count
-    function populatePlayerInputs() {
-        const count = parseInt(playerCountInput.value);
-        awayPlayersDiv.innerHTML = '<h4>ビジター選手名</h4>';
-        homePlayersDiv.innerHTML = '<h4>ホーム選手名</h4>';
-
-        for (let i = 1; i <= count; i++) {
-            awayPlayersDiv.innerHTML += `
-                <div class="player-input-group">
-                    <label for="awayPlayer${i}">選手${i}:</label>
-                    <input type="text" id="awayPlayer${i}" value="ビジター${i}">
-                </div>
-            `;
-            homePlayersDiv.innerHTML += `
-                <div class="player-input-group">
-                    <label for="homePlayer${i}">選手${i}:</label>
-                    <input type="text" id="homePlayer${i}" value="ホーム${i}">
-                </div>
-            `;
-        }
-    }
-
-    // Function to setup the scoreboard innings dynamically
-    function setupScoreboardInnings() {
-        // Clear existing innings
-        document.querySelectorAll('.inning-col').forEach(el => el.remove());
-        document.querySelectorAll('.inning-score').forEach(el => el.remove());
-
-        // Add inning headers
-        for (let i = 1; i <= maxInnings; i++) {
-            const inningHeader = document.createElement('div');
-            inningHeader.classList.add('inning-col');
-            inningHeader.textContent = i;
-            scoreboardHeader.insertBefore(inningHeader, scoreboardHeader.querySelector('.rhe-col'));
-        }
-
-        // Add inning score cells for each team
-        for (let i = 1; i <= maxInnings; i++) {
-            const awayInningScore = document.createElement('div');
-            awayInningScore.classList.add('inning-score');
-            awayInningScore.id = `awayInning${i}`;
-            awayInningScore.textContent = '0';
-            awayTeamRow.insertBefore(awayInningScore, awayTeamRow.querySelector('.rhe-score'));
-
-            const homeInningScore = document.createElement('div');
-            homeInningScore.classList.add('inning-score');
-            homeInningScore.id = `homeInning${i}`;
-            homeInningScore.textContent = '0';
-            homeTeamRow.insertBefore(homeInningScore, homeTeamRow.querySelector('.rhe-score'));
-        }
-    }
-
-    // Function to update inning scores on the scoreboard
-    function updateInningScore(team, inning, score) {
-        const inningId = `${team}Inning${inning}`;
-        const inningElem = document.getElementById(inningId);
-        if (inningElem) {
-            inningElem.textContent = score;
-        }
-    }
-
-    // Function to populate the current batter select dropdown
-    function populateBatterSelect() {
-        currentBatterSelect.innerHTML = ''; // Clear previous options
-        let currentTeamPlayers = isTopInning ? gameData.away.players : gameData.home.players;
-        currentBattingTeam = isTopInning ? 'away' : 'home';
-
-        currentTeamPlayers.forEach((player, index) => {
-            const option = document.createElement('option');
-            option.value = player.name;
-            option.textContent = player.name;
-            currentBatterSelect.appendChild(option);
+    /**
+     * 選手成績テーブルを更新します。
+     * @param {Array<Object>} players - プレイヤーオブジェクトの配列
+     * @param {HTMLElement} tbodyElement - テーブルのtbody要素
+     */
+    const updatePlayerStatsTable = (players, tbodyElement) => {
+        tbodyElement.innerHTML = '';
+        players.forEach((player, index) => {
+            const row = tbodyElement.insertRow();
+            row.insertCell().textContent = index + 1; // 背番号
+            row.insertCell().textContent = player.name; // 選手名
+            row.insertCell().textContent = player.atBats + player.walks + player.sacrifices; // 打席数 = 打数 + 四球 + 犠打/犠飛
+            row.insertCell().textContent = player.atBats; // 打数
+            row.insertCell().textContent = player.hits; // 安打
+            row.insertCell().textContent = player.rbi; // 打点
+            row.insertCell().textContent = player.runsScored; // 得点
+            row.insertCell().textContent = player.walks; // 四球
+            row.insertCell().textContent = player.strikeOuts; // 三振
+            row.insertCell().textContent = calculateBattingAverage(player); // 打率
         });
+    };
 
-        // Set current batter to the correct player in the lineup
-        currentBatterSelect.selectedIndex = currentBatterIndex;
-    }
+    /**
+     * 試合履歴にエントリを追加します。
+     * @param {string} eventDetail - 履歴に表示するイベントの詳細
+     */
+    const addHistoryEntry = (eventDetail) => {
+        const entry = document.createElement('li');
+        entry.innerHTML = `<strong>${gameState.currentInning}回${gameState.isTopInning ? '表' : '裏'}</strong>: ${eventDetail}`;
+        elements.gameHistoryList.prepend(entry); // 最新のものを上に追加
 
-    // Function to update player stats table
-    function updatePlayerStatsTables() {
-        awayPlayerStatsTeamName.textContent = `${gameData.away.name} 選手成績`;
-        homePlayerStatsTeamName.textContent = `${gameData.home.name} 選手成績`;
-
-        function renderTeamStats(teamData, tableBody) {
-            tableBody.innerHTML = '';
-            teamData.players.forEach((player, index) => {
-                const atBats = player.atBats;
-                const hits = player.hits;
-                const walks = player.walks;
-                const hbp = player.hbp;
-                const sacrifices = player.sacrifices;
-
-                const avg = calculateAVG(hits, atBats);
-                const obp = calculateOBP(hits, walks, hbp, atBats, sacrifices);
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${player.name}</td>
-                    <td>${atBats}</td>
-                    <td>${hits}</td>
-                    <td>${walks}</td>
-                    <td>${hbp}</td>
-                    <td>${sacrifices}</td>
-                    <td>${avg}</td>
-                    <td>${obp}</td>
-                `;
-                tableBody.appendChild(row);
-            });
+        // 履歴データにも追加（元に戻す機能用）
+        gameState.gameHistory.push({
+            inning: gameState.currentInning,
+            isTop: gameState.isTopInning,
+            detail: eventDetail,
+            state: JSON.parse(JSON.stringify(gameState)) // 現在のゲーム状態をディープコピーして保存
+        });
+        // 最大履歴数を設定（例: 50件）
+        if (gameState.gameHistory.length > 50) {
+            gameState.gameHistory.shift(); // 古いものから削除
+            elements.gameHistoryList.lastChild.remove(); // UIからも削除
         }
+    };
 
-        renderTeamStats(gameData.away, awayPlayerStatsTable);
-        renderTeamStats(gameData.home, homePlayerStatsTable);
-    }
+    /**
+     * 直前のゲーム状態を保存し、アクション履歴に追加します。
+     * 「元に戻す」機能に使用されます。
+     * @param {string} actionType - 行われたアクションの種類
+     */
+    const storeActionState = (actionType) => {
+        // 現在のgameStateをコピーしてアクション履歴に追加
+        gameState.actionHistory.push({
+            type: actionType,
+            prevState: JSON.parse(JSON.stringify(gameState))
+        });
+        // 例: 過去10アクションまで保持
+        if (gameState.actionHistory.length > 10) {
+            gameState.actionHistory.shift();
+        }
+    };
 
-    // Function to reset counts (balls, strikes)
-    function resetCount() {
-        balls = 0;
-        strikes = 0;
+    // --- ゲームロジック ---
+    const resetCounts = () => {
+        gameState.balls = 0;
+        gameState.strikes = 0;
+        // outsはリセットしない（打席ごとに増えるため）
         updateScoreboard();
-        addGameAction("カウントリセット");
-    }
+    };
 
-    // Function to advance bases (runner moves one base)
-    function advanceRunner(fromBase) {
-        if (fromBase === 3 && bases.third) {
-            // Runner on third scores
-            bases.third = false;
-            addRun();
-        } else if (fromBase === 2 && bases.second) {
-            // Runner on second moves to third
-            bases.third = true;
-            bases.second = false;
-        } else if (fromBase === 1 && bases.first) {
-            // Runner on first moves to second
-            bases.second = true;
-            bases.first = false;
-        }
+    const resetBases = () => {
+        gameState.runners = { first: null, second: null, third: null };
         updateScoreboard();
-    }
+    };
 
-    // Function to clear all bases
-    function clearBases() {
-        bases.first = false;
-        bases.second = false;
-        bases.third = false;
-        updateScoreboard();
-        addGameAction("塁上クリア");
-    }
+    const nextBatter = () => {
+        gameState.currentBatterIndex = (gameState.currentBatterIndex + 1) % gameState.currentTeam.players.length;
+        updateCurrentBatterSelect();
+    };
 
-    // Function to add an out
-    function addOut() {
-        outs++;
-        addGameAction("アウト追加");
-        if (outs >= 3) {
-            handleThreeOuts();
+    /**
+     * アウトを記録し、その後の処理を行います。
+     * @param {string} message - 履歴に表示するアウトのメッセージ
+     */
+    const recordOut = (message) => {
+        gameState.outs++;
+        addHistoryEntry(message);
+        resetCounts(); // アウトになったらボール・ストライクはリセット
+
+        if (gameState.outs >= 3) {
+            nextHalfInning(); // 3アウトで攻守交代
+        } else {
+            nextBatter(); // 次の打者へ
         }
-        updateScoreboard();
-    }
+        updateScoreboard(); // アウト後の状態を更新
+    };
 
-    // Function to handle 3 outs (end of half-inning)
-    function handleThreeOuts() {
-        addGameAction("3アウト、攻守交代！");
-        outs = 0;
-        balls = 0;
-        strikes = 0;
-        clearBases();
-        switchSides();
-    }
+    /**
+     * ランナーを進塁させ、得点を計算します。
+     * @param {number} basesAdvanced - 打者の進塁数（1=単打, 2=二塁打, 3=三塁打, 4=本塁打）
+     * @param {string} currentBatterResult - 打者の結果 ('single', 'double', 'triple', 'homeRun', 'walk', 'error'など)
+     * @returns {number} このプレーで入った得点数
+     */
+    const advanceRunners = (basesAdvanced, currentBatterResult = null) => {
+        let runsScoredThisPlay = 0;
+        const currentBatter = gameState.currentTeam.players[gameState.currentBatterIndex];
+        const newRunnersState = { first: null, second: null, third: null };
 
-    // Function to move runners based on hit type
-    function moveRunners(hitType) {
-        let runsScored = 0;
-        // Move existing runners
-        if (bases.third) {
-            runsScored++;
-            bases.third = false;
+        // 各塁のランナーを進めるロジック
+        // 3塁ランナーの処理
+        if (gameState.runners.third) {
+            gameState.currentTeam.players[gameState.runners.third.index].runsScored++;
+            runsScoredThisPlay++;
+            addHistoryEntry(`${gameState.runners.third.name}が本塁生還！`);
         }
-        if (bases.second) {
-            bases.third = true;
-            bases.second = false;
+        // 2塁ランナーの処理
+        if (gameState.runners.second) {
+            newRunnersState.third = gameState.runners.second;
         }
-        if (bases.first) {
-            bases.second = true;
-            bases.first = false;
+        // 1塁ランナーの処理
+        if (gameState.runners.first) {
+            newRunnersState.second = gameState.runners.first;
         }
 
-        // Place batter on base
-        if (hitType === 'single') {
-            bases.first = true;
-        } else if (hitType === 'double') {
-            bases.first = false; // Batter goes directly to second
-            bases.second = true;
-        } else if (hitType === 'triple') {
-            bases.first = false;
-            bases.second = false; // Batter goes directly to third
-            bases.third = true;
-        } else if (hitType === 'homerun') {
-            runsScored++; // Batter scores
-            clearBases(); // Clear all bases as homerun clears them
-            // All existing runners also score
-            if (bases.first) runsScored++;
-            if (bases.second) runsScored++;
-            if (bases.third) runsScored++;
-        } else if (hitType === 'walk' || hitType === 'hbp') {
-            // If bases are loaded, runner on third scores
-            if (bases.first && bases.second && bases.third) {
-                runsScored++;
-                bases.third = false; // Runner from 3rd scores
+        // 打者の進塁処理
+        if (currentBatterResult === 'single') {
+            newRunnersState.first = { id: currentBatter.id, name: currentBatter.name, index: gameState.currentBatterIndex };
+        } else if (currentBatterResult === 'double') {
+            newRunnersState.second = { id: currentBatter.id, name: currentBatter.name, index: gameState.currentBatterIndex };
+        } else if (currentBatterResult === 'triple') {
+            newRunnersState.third = { id: currentBatter.id, name: currentBatter.name, index: gameState.currentBatterIndex };
+        } else if (currentBatterResult === 'homeRun') {
+            // 本塁打の場合は全ランナーと打者が生還
+            runsScoredThisPlay++; // 打者自身の得点
+            currentBatter.runsScored++;
+            if (gameState.runners.third) runsScoredThisPlay++;
+            if (gameState.runners.second) runsScoredThisPlay++;
+            if (gameState.runners.first) runsScoredThisPlay++;
+            resetBases(); // 全ランナーと打者が生還するため塁をクリア
+        } else if (currentBatterResult === 'walk' || currentBatterResult === 'error') {
+            // 四球またはエラーの場合の押し出しと進塁
+            // 押し出し判定と進塁処理
+            if (newRunnersState.third && newRunnersState.second && newRunnersState.first) {
+                 // 満塁の場合、3塁ランナーが押し出しで得点
+                gameState.currentTeam.players[newRunnersState.third.index].runsScored++;
+                runsScoredThisPlay++;
+                addHistoryEntry(`${newRunnersState.third.name}が押し出しで本塁生還！`);
+                newRunnersState.third = newRunnersState.second; // 2塁ランナーが3塁へ
+                newRunnersState.second = newRunnersState.first; // 1塁ランナーが2塁へ
+            } else if (newRunnersState.second && newRunnersState.first) { // 1,2塁にランナーがいる場合
+                newRunnersState.third = newRunnersState.second;
+                newRunnersState.second = newRunnersState.first;
+            } else if (newRunnersState.first) { // 1塁にランナーがいる場合
+                newRunnersState.second = newRunnersState.first;
             }
-            // If first base is occupied, runner moves up
-            if (bases.first) {
-                if (bases.second) {
-                    if (bases.third) {
-                        // All bases loaded, runner from 3rd scores
-                        // Handled above.
-                    } else {
-                        // 1st and 2nd occupied, runner from 2nd moves to 3rd
-                        bases.third = true;
-                        bases.second = false;
-                    }
-                } else {
-                    // 1st occupied, 2nd empty, runner from 1st moves to 2nd
-                    bases.second = true;
-                    bases.first = false;
+            newRunnersState.first = { id: currentBatter.id, name: currentBatter.name, index: gameState.currentBatterIndex };
+        }
+
+        if (currentBatterResult !== 'homeRun') {
+            // 新しいランナーの状態を適用
+            gameState.runners = newRunnersState;
+        }
+
+        gameState.currentTeam.runs += runsScoredThisPlay;
+        return runsScoredThisPlay;
+    };
+
+    /**
+     * 半イニングの終了処理（攻守交代またはイニング終了）。
+     */
+    const nextHalfInning = () => {
+        const { currentInning, isTopInning, awayTeam, homeTeam, currentTeam } = gameState;
+
+        // 現在のイニングのスコアを確定
+        const inningIndex = currentInning - 1;
+        // これまでの累計スコアとの差分で、この半イニングの得点を計算
+        let previousTotalRuns = currentTeam.inningScores.slice(0, inningIndex).reduce((sum, score) => sum + (score || 0), 0);
+        let runsThisHalfInning = currentTeam.runs - previousTotalRuns;
+        if (runsThisHalfInning < 0) runsThisHalfInning = 0; // マイナスにならないように
+
+        currentTeam.inningScores[inningIndex] = runsThisHalfInning;
+        addHistoryEntry(`${currentInning}回${isTopInning ? '表' : '裏'} 終了。${currentTeam.name}はこの回${runsThisHalfInning}点。`);
+
+        // 攻守交代
+        gameState.isTopInning = !isTopInning;
+
+        if (!gameState.isTopInning) { // イニングの裏が終了した場合
+            gameState.currentInning++;
+            addHistoryEntry(`${currentInning}回終了。`);
+        }
+
+        // 試合終了判定
+        // 最終イニングの裏終了時、ホームチームが勝っていれば試合終了
+        if (gameState.currentInning > gameState.totalInnings && !gameState.isTopInning && homeTeam.runs > awayTeam.runs) {
+            endGame();
+            return;
+        }
+        // 指定イニング数を超えて、まだ決着がつかない場合は延長戦
+        if (gameState.currentInning > gameState.totalInnings && gameState.isTopInning && awayTeam.runs > homeTeam.runs && gameState.currentInning > 9) {
+             // 延長で先攻が勝ち越した場合、裏の攻撃は行わず試合終了
+             endGame();
+             return;
+        }
+
+
+        // 最大イニング数を超過しすぎた場合（無限延長防止）
+        if (gameState.currentInning > gameState.totalInnings + 10) { // 例: 延長10回までなど
+             alert('規定の延長イニングを超過したため、試合を終了します。');
+             endGame();
+             return;
+        }
+
+
+        resetCounts();
+        resetBases();
+        gameState.currentBatterIndex = 0; // イニング開始時は先頭打者に戻る
+        setTeamsForInning(); // 表/裏に応じてカレントチームを設定
+        updateScoreboard();
+        updateCurrentBatterSelect();
+    };
+
+    /**
+     * 現在のイニングの攻守に応じて、カレントチームと相手チームを設定します。
+     */
+    const setTeamsForInning = () => {
+        if (gameState.isTopInning) {
+            gameState.currentTeam = gameState.awayTeam;
+            gameState.opposingTeam = gameState.homeTeam;
+        } else {
+            gameState.currentTeam = gameState.homeTeam;
+            gameState.opposingTeam = gameState.awayTeam;
+        }
+    };
+
+    /**
+     * 試合を終了し、結果を表示します。
+     */
+    const endGame = () => {
+        const { awayTeam, homeTeam } = gameState;
+        let winnerMessage = '';
+        if (awayTeam.runs > homeTeam.runs) {
+            winnerMessage = `${awayTeam.name}の勝利！`;
+        } else if (homeTeam.runs > awayTeam.runs) {
+            winnerMessage = `${homeTeam.name}の勝利！`;
+        } else {
+            winnerMessage = '引き分け！';
+        }
+
+        addHistoryEntry(`試合終了！ ${winnerMessage}`);
+        addHistoryEntry(`最終スコア: ${awayTeam.name} ${awayTeam.runs} - ${homeTeam.name} ${homeTeam.runs}`);
+
+        alert(`試合終了！\n${winnerMessage}\n\n${awayTeam.name}: ${awayTeam.runs} Runs, ${awayTeam.hits} Hits, ${awayTeam.errors} Errors\n${homeTeam.name}: ${homeTeam.runs} Runs, ${homeTeam.hits} Hits, ${homeTeam.errors} Errors`);
+
+        elements.gameSection.classList.add('hidden');
+        elements.historySection.classList.remove('hidden');
+        elements.clearHistoryButton.classList.remove('hidden'); // 履歴クリアボタンを表示
+        elements.backToSetupButton.classList.remove('hidden'); // 設定に戻るボタンを表示
+    };
+
+    // --- プレイヤー入力フィールドの動的生成 ---
+    /**
+     * 選手名入力フィールドを動的に生成します。
+     * @param {HTMLElement} container - 入力フィールドを追加するコンテナ要素
+     * @param {string} teamPrefix - チームのプレフィックス ('away' or 'home')
+     */
+    const createPlayerInputFields = (container, teamPrefix) => {
+        container.innerHTML = ''; // 既存のフィールドをクリア
+        for (let i = 0; i < 9; i++) { // デフォルト9人
+            const group = document.createElement('div');
+            group.classList.add('player-input-group');
+            const label = document.createElement('label');
+            label.textContent = `${i + 1}.`;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = `${teamPrefix === 'away' ? 'ビジター' : 'ホーム'}選手${i + 1}`; // デフォルト名
+            input.dataset.playerId = generatePlayerId(teamPrefix, i); // IDをデータ属性として保持
+
+            group.appendChild(label);
+            group.appendChild(input);
+            container.appendChild(group);
+        }
+    };
+
+    // --- イベントハンドラ ---
+    elements.startGameButton.addEventListener('click', () => {
+        // 入力値の取得とバリデーション
+        const totalInnings = parseInt(elements.inningCountInput.value);
+        if (isNaN(totalInnings) || totalInnings < 1) {
+            alert('有効なイニング数を入力してください。(1以上)');
+            return;
+        }
+
+        const awayTeamName = elements.awayTeamNameInput.value.trim() || 'ビジターズ';
+        const homeTeamName = elements.homeTeamNameInput.value.trim() || 'ホームズ';
+
+        // プレイヤーデータの初期化
+        const getPlayersFromInput = (divElement, teamPrefix) => {
+            return Array.from(divElement.querySelectorAll('.player-input-group input')).map((input, index) => {
+                return {
+                    ...playerPrototype, // プロトタイプからプロパティを継承
+                    id: generatePlayerId(teamPrefix, index),
+                    name: input.value.trim() || `${teamPrefix === 'away' ? 'ビジター' : 'ホーム'}選手${index + 1}`
+                };
+            });
+        };
+
+        gameState.awayTeam = {
+            name: awayTeamName,
+            players: getPlayersFromInput(elements.awayPlayersDiv, 'away'),
+            runs: 0, hits: 0, errors: 0, inningScores: Array(totalInnings).fill(null)
+        };
+        gameState.homeTeam = {
+            name: homeTeamName,
+            players: getPlayersFromInput(elements.homePlayersDiv, 'home'),
+            runs: 0, hits: 0, errors: 0, inningScores: Array(totalInnings).fill(null)
+        };
+
+        // ゲーム状態のリセット
+        gameState.totalInnings = totalInnings;
+        gameState.currentInning = 1;
+        gameState.isTopInning = true;
+        gameState.balls = 0;
+        gameState.strikes = 0;
+        gameState.outs = 0;
+        resetBases();
+        gameState.currentBatterIndex = 0;
+        gameState.gameHistory = [];
+        elements.gameHistoryList.innerHTML = '';
+        gameState.actionHistory = []; // アクション履歴もクリア
+
+        setTeamsForInning(); // 初期チーム設定
+        updateScoreboard();
+        updateCurrentBatterSelect();
+
+        // UIの切り替え
+        elements.setupSection.classList.add('hidden');
+        elements.gameSection.classList.remove('hidden');
+        elements.historySection.classList.add('hidden'); // 試合中は履歴を非表示
+
+        addHistoryEntry(`試合開始！ ${awayTeamName} vs ${homeTeamName} (${totalInnings}イニング制)`);
+    });
+
+    // 「元に戻す」ボタン
+    elements.undoLastActionBtn.addEventListener('click', () => {
+        if (gameState.actionHistory.length > 0) {
+            const lastState = gameState.actionHistory.pop().prevState;
+            // 状態を復元
+            // JSON.parse(JSON.stringify()) を使用してディープコピー
+            Object.assign(gameState, JSON.parse(JSON.stringify(lastState)));
+            addHistoryEntry(`アクションを元に戻しました。`);
+
+            // UIを更新
+            updateScoreboard();
+            updateCurrentBatterSelect();
+            // 履歴リストの最新のエントリも削除 (元に戻されたアクション)
+            // 元に戻すアクション自体は履歴に残し、元に戻されたアクションを削除
+            // 履歴の末尾 (古い方) から一つ削除するのではなく、履歴リストの先頭 (最新) から一つ削除する
+            if (elements.gameHistoryList.firstChild) {
+                elements.gameHistoryList.firstChild.remove();
+            }
+
+        } else {
+            alert('これ以上元に戻せる操作はありません。');
+        }
+    });
+
+    // --- 打席操作ボタン ---
+    elements.singleBtn.addEventListener('click', () => {
+        storeActionState('single');
+        const batter = gameState.currentTeam.players[gameState.currentBatterIndex];
+        batter.atBats++; // 打数にカウント
+        batter.hits++;
+        batter.singles++;
+        const runsScored = advanceRunners(1, 'single');
+        batter.rbi += runsScored;
+        addHistoryEntry(`${batter.name}が**単打**！`);
+        resetCounts();
+        nextBatter();
+        updateScoreboard();
+    });
+
+    elements.doubleBtn.addEventListener('click', () => {
+        storeActionState('double');
+        const batter = gameState.currentTeam.players[gameState.currentBatterIndex];
+        batter.atBats++; // 打数にカウント
+        batter.hits++;
+        batter.doubles++;
+        const runsScored = advanceRunners(2, 'double');
+        batter.rbi += runsScored;
+        addHistoryEntry(`${batter.name}が**二塁打**！`);
+        resetCounts();
+        nextBatter();
+        updateScoreboard();
+    });
+
+    elements.tripleBtn.addEventListener('click', () => {
+        storeActionState('triple');
+        const batter = gameState.currentTeam.players[gameState.currentBatterIndex];
+        batter.atBats++; // 打数にカウント
+        batter.hits++;
+        batter.triples++;
+        const runsScored = advanceRunners(3, 'triple');
+        batter.rbi += runsScored;
+        addHistoryEntry(`${batter.name}が**三塁打**！`);
+        resetCounts();
+        nextBatter();
+        updateScoreboard();
+    });
+
+    elements.homeRunBtn.addEventListener('click', () => {
+        storeActionState('homeRun');
+        const batter = gameState.currentTeam.players[gameState.currentBatterIndex];
+        batter.atBats++; // 打数にカウント
+        batter.hits++;
+        batter.homeRuns++;
+        const runsScored = advanceRunners(4, 'homeRun'); // 本塁打は特別扱い
+        batter.rbi += runsScored;
+        addHistoryEntry(`${batter.name}が**本塁打**！ ${runsScored}点追加！`);
+        resetCounts();
+        nextBatter();
+        updateScoreboard();
+    });
+
+    elements.walkBtn.addEventListener('click', () => {
+        storeActionState('walk');
+        const batter = gameState.currentTeam.players[gameState.currentBatterIndex];
+        batter.walks++;
+        // 四球は打数に含めないため、atBatsは増やさない
+        const runsScored = advanceRunners(1, 'walk'); // 四球による押し出しも考慮
+        batter.rbi += runsScored; // 押し出しの場合打点に加算
+        addHistoryEntry(`${batter.name}が**四球**を選びました。`);
+        resetCounts();
+        nextBatter();
+        updateScoreboard();
+    });
+
+    elements.strikeOutBtn.addEventListener('click', () => {
+        storeActionState('strikeOut');
+        const batter = gameState.currentTeam.players[gameState.currentBatterIndex];
+        batter.atBats++; // 三振は打数にカウント
+        batter.strikeOuts++;
+        recordOut(`${batter.name}が**三振**！`);
+    });
+
+    elements.outBtn.addEventListener('click', () => {
+        storeActionState('out');
+        const batter = gameState.currentTeam.players[gameState.currentBatterIndex];
+        batter.atBats++; // アウトは打数にカウント
+        recordOut(`${batter.name}が**アウト**になりました。`);
+    });
+
+    elements.sacrificeBtn.addEventListener('click', () => {
+        storeActionState('sacrifice');
+        const batter = gameState.currentTeam.players[gameState.currentBatterIndex];
+        batter.sacrifices++; // 犠打/犠飛は打数に含まれない
+
+        const basesInput = prompt(`${batter.name}の犠打/犠飛です。何塁ランナーが進塁しましたか？（例: 3, 2, 1, 0(進塁なし)）\n複数いる場合はカンマ区切りで入力してください。`, '0');
+        let tempRunsScored = 0;
+        if (basesInput) {
+            const bases = basesInput.split(',').map(b => parseInt(b.trim())).filter(b => !isNaN(b) && b > 0 && b < 4).sort((a,b)=>b-a); // 大きい順にソート
+
+            let tempRunners = { ...gameState.runners }; // 一時的なランナー状態
+
+            // ランナーの進塁処理
+            for (const base of bases) {
+                if (base === 3 && tempRunners.third) {
+                    gameState.currentTeam.players[tempRunners.third.index].runsScored++;
+                    tempRunsScored++;
+                    tempRunners.third = null;
+                } else if (base === 2 && tempRunners.second) {
+                    tempRunners.third = tempRunners.second;
+                    tempRunners.second = null;
+                } else if (base === 1 && tempRunners.first) {
+                    tempRunners.second = tempRunners.first;
+                    tempRunners.first = null;
                 }
             }
-            // Batter takes first base
-            bases.first = true;
-        } else if (hitType === 'error') {
-            bases.first = true; // Batter reaches on error
-            // Other runners advance based on game situation (simplified: just put batter on 1st)
-        }
+            gameState.currentTeam.runs += tempRunsScored;
+            batter.rbi += tempRunsScored;
+            gameState.runners = tempRunners; // 最終状態を適用
 
-        // Add the runs scored from this play
-        for (let i = 0; i < runsScored; i++) {
-            addRun();
-        }
-
-        updateScoreboard();
-    }
-
-
-    // Function to add a run to the current batting team
-    function addRun() {
-        if (isTopInning) {
-            gameData.away.score++;
-            updateInningScore('away', currentInning, gameData.away.innings[currentInning] + 1);
-            gameData.away.innings[currentInning]++;
+            addHistoryEntry(`${batter.name}の**犠打/犠飛**。${tempRunsScored}点追加。`);
         } else {
-            gameData.home.score++;
-            updateInningScore('home', currentInning, gameData.home.innings[currentInning] + 1);
-            gameData.home.innings[currentInning]++;
+             addHistoryEntry(`${batter.name}の**犠打/犠飛**（進塁なし）。`);
         }
-        updateScoreboard();
-        addGameAction("得点追加");
-    }
+        recordOut(`打者 ${batter.name}がアウトになりました。`); // 犠打/犠飛はアウトを伴う
+    });
 
-    // Function to subtract a run from the current batting team
-    function subtractRun() {
-        if (isTopInning) {
-            if (gameData.away.score > 0) {
-                gameData.away.score--;
-                updateInningScore('away', currentInning, gameData.away.innings[currentInning] - 1);
-                gameData.away.innings[currentInning]--;
-            }
-        } else {
-            if (gameData.home.score > 0) {
-                gameData.home.score--;
-                updateInningScore('home', currentInning, gameData.home.innings[currentInning] - 1);
-                gameData.home.innings[currentInning]--;
-            }
+    elements.errorBtn.addEventListener('click', () => {
+        storeActionState('error');
+        const batter = gameState.currentTeam.players[gameState.currentBatterIndex];
+        gameState.currentTeam.errors++;
+        // 失策による出塁は打数に含めないため、atBatsは増やさない
+        const runsScored = advanceRunners(1, 'error'); // 一旦1塁出塁として進塁処理
+        batter.rbi += runsScored;
+        addHistoryEntry(`${batter.name}が相手チームの**失策**で出塁。`);
+        resetCounts();
+        nextBatter();
+        updateScoreboard();
+    });
+
+    // --- 塁上操作ボタン ---
+    elements.stealBtn.addEventListener('click', () => {
+        storeActionState('steal');
+        const availableRunners = [];
+        if (gameState.runners.first) availableRunners.push({ base: '1塁', runner: gameState.runners.first });
+        if (gameState.runners.second) availableRunners.push({ base: '2塁', runner: gameState.runners.second });
+        if (gameState.runners.third) availableRunners.push({ base: '3塁', runner: gameState.runners.third });
+
+        if (availableRunners.length === 0) {
+            alert('塁上にランナーがいません。');
+            return;
         }
-        updateScoreboard();
-        addGameAction("得点削除");
-    }
 
-    // Function to add an error to the fielding team
-    function addError() {
-        if (isTopInning) {
-            gameData.home.errors++; // Home team is fielding
-        } else {
-            gameData.away.errors++; // Away team is fielding
+        let promptMessage = 'どのランナーが何塁に盗塁しますか？\n';
+        availableRunners.forEach((item, index) => {
+            promptMessage += `${index + 1}. ${item.runner.name} (${item.base})\n`;
+        });
+        promptMessage += '例: 1,2 (1番目のランナーが2塁へ盗塁)';
+
+        const input = prompt(promptMessage);
+        if (!input) return;
+
+        const [runnerIndexStr, targetBaseStr] = input.split(',').map(s => s.trim());
+        const runnerIndex = parseInt(runnerIndexStr) - 1;
+        const targetBase = parseInt(targetBaseStr);
+
+        if (isNaN(runnerIndex) || runnerIndex < 0 || runnerIndex >= availableRunners.length ||
+            isNaN(targetBase) || (targetBase !== 2 && targetBase !== 3 && targetBase !== 4)) { // 4は本塁
+            alert('入力が不正です。対象のランナー番号と目標塁（2, 3, 4）を正確に入力してください。');
+            return;
         }
-        updateScoreboard();
-        addGameAction("エラー追加");
-    }
 
-    // Function to subtract an error from the fielding team
-    function subtractError() {
-        if (isTopInning) {
-            if (gameData.home.errors > 0) {
-                gameData.home.errors--;
-            }
+        const selectedRunner = availableRunners[runnerIndex].runner;
+        let stolen = false;
+
+        // 盗塁ロジック
+        if (selectedRunner.id === gameState.runners.first?.id && targetBase === 2 && !gameState.runners.second) {
+            gameState.runners.second = gameState.runners.first;
+            gameState.runners.first = null;
+            stolen = true;
+        } else if (selectedRunner.id === gameState.runners.second?.id && targetBase === 3 && !gameState.runners.third) {
+            gameState.runners.third = gameState.runners.second;
+            gameState.runners.second = null;
+            stolen = true;
+        } else if (selectedRunner.id === gameState.runners.third?.id && targetBase === 4) { // 本塁盗塁
+            gameState.currentTeam.players[selectedRunner.index].runsScored++;
+            gameState.currentTeam.runs++;
+            gameState.runners.third = null;
+            stolen = true;
         } else {
-            if (gameData.away.errors > 0) {
-                gameData.away.errors--;
-            }
+            alert('指定されたランナーはその塁に盗塁できません（移動先にランナーがいる、または不正な盗塁です）。');
+            return;
         }
-        updateScoreboard();
-        addGameAction("エラー削除");
-    }
 
-    // Function to switch sides (top to bottom, or bottom to next inning)
-    function switchSides() {
-        addGameAction("攻守交代");
-        outs = 0;
-        balls = 0;
-        strikes = 0;
-        clearBases();
+        if (stolen) {
+            gameState.currentTeam.players[selectedRunner.index].stolenBases++;
+            addHistoryEntry(`${selectedRunner.name}が**${targetBase === 4 ? '本塁' : targetBase + '塁'}に盗塁成功**！`);
+            updateScoreboard();
+        }
+    });
 
-        if (isTopInning) {
-            // Switch to bottom of current inning
-            isTopInning = false;
+    elements.advanceRunnerBtn.addEventListener('click', () => {
+        storeActionState('advanceRunner');
+        const availableRunners = [];
+        if (gameState.runners.first) availableRunners.push({ base: '1塁', runner: gameState.runners.first });
+        if (gameState.runners.second) availableRunners.push({ base: '2塁', runner: gameState.runners.second });
+        if (gameState.runners.third) availableRunners.push({ base: '3塁', runner: gameState.runners.third });
+
+        if (availableRunners.length === 0) {
+            alert('塁上にランナーがいません。');
+            return;
+        }
+
+        let promptMessage = 'どのランナーが何塁に進塁しますか？\n';
+        availableRunners.forEach((item, index) => {
+            promptMessage += `${index + 1}. ${item.runner.name} (${item.base})\n`;
+        });
+        promptMessage += '例: 1,2 (1番目のランナーが2塁へ進塁)';
+
+        const input = prompt(promptMessage);
+        if (!input) return;
+
+        const [runnerIndexStr, targetBaseStr] = input.split(',').map(s => s.trim());
+        const runnerIndex = parseInt(runnerIndexStr) - 1;
+        const targetBase = parseInt(targetBaseStr);
+
+        if (isNaN(runnerIndex) || runnerIndex < 0 || runnerIndex >= availableRunners.length ||
+            isNaN(targetBase) || (targetBase !== 2 && targetBase !== 3 && targetBase !== 4)) {
+            alert('入力が不正です。対象のランナー番号と目標塁（2, 3, 4）を正確に入力してください。');
+            return;
+        }
+
+        const selectedRunner = availableRunners[runnerIndex].runner;
+        const currentBaseName = availableRunners[runnerIndex].base; // 現在の塁名を取得
+        let advanced = false;
+        let message = '';
+
+        // まず現在の塁からランナーを一時的に削除
+        if (selectedRunner.id === gameState.runners.first?.id) gameState.runners.first = null;
+        else if (selectedRunner.id === gameState.runners.second?.id) gameState.runners.second = null;
+        else if (selectedRunner.id === gameState.runners.third?.id) gameState.runners.third = null;
+
+        // 目標の塁に配置
+        if (targetBase === 2 && !gameState.runners.second && currentBaseName === '1塁') { // 1塁から2塁
+            gameState.runners.second = selectedRunner;
+            advanced = true;
+            message = `が2塁へ進塁。`;
+        } else if (targetBase === 3 && !gameState.runners.third && currentBaseName === '2塁') { // 2塁から3塁
+            gameState.runners.third = selectedRunner;
+            advanced = true;
+            message = `が3塁へ進塁。`;
+        } else if (targetBase === 4 && currentBaseName === '3塁') { // 3塁から本塁
+            gameState.currentTeam.players[selectedRunner.index].runsScored++;
+            gameState.currentTeam.runs++;
+            advanced = true;
+            message = `が本塁生還し得点！`;
         } else {
-            // Switch to top of next inning
-            isTopInning = true;
-            currentInning++;
-            if (currentInning > maxInnings && gameData.away.score !== gameData.home.score) {
-                endGame();
+            alert('その塁にランナーがいるか、または不正な進塁です（例: 1塁から3塁への直接進塁は不可）。');
+            // 進塁できなかった場合は、元の塁に戻す
+            if (currentBaseName === '1塁') gameState.runners.first = selectedRunner;
+            else if (currentBaseName === '2塁') gameState.runners.second = selectedRunner;
+            else if (currentBaseName === '3塁') gameState.runners.third = selectedRunner;
+            return;
+        }
+
+        if (advanced) {
+            addHistoryEntry(`${selectedRunner.name}${message}`);
+            updateScoreboard();
+        }
+    });
+
+
+    elements.forceOutRunnerBtn.addEventListener('click', () => {
+        storeActionState('forceOut');
+        const availableRunners = [];
+        if (gameState.runners.first) availableRunners.push({ base: '1塁', runner: gameState.runners.first });
+        if (gameState.runners.second) availableRunners.push({ base: '2塁', runner: gameState.runners.second });
+        if (gameState.runners.third) availableRunners.push({ base: '3塁', runner: gameState.runners.third });
+
+        if (availableRunners.length === 0) {
+            alert('塁上にランナーがいません。');
+            return;
+        }
+
+        let promptMessage = 'どのランナーがアウトになりますか？\n';
+        availableRunners.forEach((item, index) => {
+            promptMessage += `${index + 1}. ${item.runner.name} (${item.base})\n`;
+        });
+        promptMessage += '番号を入力してください:';
+
+        const input = prompt(promptMessage);
+        if (!input) return;
+
+        const runnerIndex = parseInt(input) - 1;
+        if (isNaN(runnerIndex) || runnerIndex < 0 || runnerIndex >= availableRunners.length) {
+            alert('入力が不正です。');
+            return;
+        }
+
+        const runnerOut = availableRunners[runnerIndex].runner;
+        const baseOut = availableRunners[runnerIndex].base;
+
+        if (runnerOut.id === gameState.runners.first?.id) gameState.runners.first = null;
+        else if (runnerOut.id === gameState.runners.second?.id) gameState.runners.second = null;
+        else if (runnerOut.id === gameState.runners.third?.id) gameState.runners.third = null;
+
+        recordOut(`${runnerOut.name}が${baseOut}で**アウト**になりました。`);
+    });
+
+    elements.returnRunnerBtn.addEventListener('click', () => {
+        storeActionState('returnRunner');
+        const availableRunners = [];
+        if (gameState.runners.first) availableRunners.push({ base: '1塁', runner: gameState.runners.first });
+        if (gameState.runners.second) availableRunners.push({ base: '2塁', runner: gameState.runners.second });
+        if (gameState.runners.third) availableRunners.push({ base: '3塁', runner: gameState.runners.third });
+
+        if (availableRunners.length === 0) {
+            alert('塁上にランナーがいません。');
+            return;
+        }
+
+        let promptMessage = 'どのランナーが前の塁に戻りますか？\n';
+        availableRunners.forEach((item, index) => {
+            promptMessage += `${index + 1}. ${item.runner.name} (${item.base})\n`;
+        });
+        promptMessage += '番号を入力してください:';
+
+        const input = prompt(promptMessage);
+        if (!input) return;
+
+        const runnerIndex = parseInt(input) - 1;
+        if (isNaN(runnerIndex) || runnerIndex < 0 || runnerIndex >= availableRunners.length) {
+            alert('入力が不正です。');
+            return;
+        }
+
+        const selectedRunner = availableRunners[runnerIndex].runner;
+        const currentBase = availableRunners[runnerIndex].base;
+        let returned = false;
+
+        // まず現在の塁からランナーを一時的に削除
+        if (selectedRunner.id === gameState.runners.first?.id) gameState.runners.first = null;
+        else if (selectedRunner.id === gameState.runners.second?.id) gameState.runners.second = null;
+        else if (selectedRunner.id === gameState.runners.third?.id) gameState.runners.third = null;
+
+
+        if (currentBase === '2塁' && !gameState.runners.first) {
+            gameState.runners.first = selectedRunner;
+            returned = true;
+        } else if (currentBase === '3塁' && !gameState.runners.second) {
+            gameState.runners.second = selectedRunner;
+            returned = true;
+        } else {
+            alert('そのランナーを前の塁に戻せません（前の塁にランナーがいるか、不正な操作です）。');
+            // 元に戻せなかった場合は、元の塁に戻す
+            if (currentBase === '1塁') gameState.runners.first = selectedRunner;
+            else if (currentBase === '2塁') gameState.runners.second = selectedRunner;
+            else if (currentBase === '3塁') gameState.runners.third = selectedRunner;
+            return;
+        }
+
+        if (returned) {
+            addHistoryEntry(`${selectedRunner.name}が前の塁に戻りました。`);
+            updateScoreboard();
+        }
+    });
+
+
+    elements.clearBasesBtn.addEventListener('click', () => {
+        storeActionState('clearBases');
+        addHistoryEntry('塁上のランナーを**すべてクリア**しました。');
+        resetBases();
+        updateScoreboard(); // クリア後の状態を更新
+    });
+
+
+    // --- イニング操作ボタン ---
+    elements.nextInningBtn.addEventListener('click', () => {
+        storeActionState('nextInning');
+        if (gameState.outs < 3) {
+            if (!confirm('まだ3アウトではありませんが、次のイニングに進みますか？')) {
                 return;
             }
-            // Initialize new inning score to 0 if it's a new inning
-            gameData.away.innings[currentInning] = 0;
-            gameData.home.innings[currentInning] = 0;
         }
+        nextHalfInning();
+    });
 
-        // Reset batter index for the new batting team
-        currentBatterIndex = 0;
-        populateBatterSelect();
-        updateScoreboard();
-
-        // Check for game over condition after potential inning advance
-        if (currentInning > maxInnings && !isTopInning && gameData.away.score !== gameData.home.score) {
-            endGame();
-        } else if (currentInning > maxInnings && isTopInning && gameData.home.score > gameData.away.score) {
-            // Home team wins if leading in bottom of last inning
+    elements.endGameBtn.addEventListener('click', () => {
+        storeActionState('endGame');
+        if (confirm('本当に試合を終了しますか？')) {
             endGame();
         }
-    }
+    });
 
-    // Function to manually advance to next inning (only if no outs/bases)
-    function nextInning() {
-        if (outs !== 0 || balls !== 0 || strikes !== 0 || bases.first || bases.second || bases.third) {
-            alert('アウト、カウント、または塁上にランナーがいるため、イニングを進めることはできません。全てリセットしてから進めてください。');
-            return;
+    // --- 履歴セクションのボタン ---
+    elements.clearHistoryButton.addEventListener('click', () => {
+        if (confirm('試合履歴をすべてクリアしてもよろしいですか？')) {
+            gameState.gameHistory = [];
+            elements.gameHistoryList.innerHTML = '';
+            alert('試合履歴をクリアしました。');
         }
-        addGameAction("次イニングへ");
-        if (isTopInning) {
-            isTopInning = false;
-        } else {
-            isTopInning = true;
-            currentInning++;
-            // Initialize new inning score to 0
-            gameData.away.innings[currentInning] = 0;
-            gameData.home.innings[currentInning] = 0;
-        }
+    });
 
-        // Reset batter index for the new batting team
-        currentBatterIndex = 0;
-        populateBatterSelect();
+    elements.backToSetupButton.addEventListener('click', () => {
+        if (confirm('試合設定画面に戻りますか？現在の試合データは失われます。')) {
+            // 初期状態に戻す
+            location.reload(); // 最も簡単な方法でページをリロードして初期化
+        }
+    });
+
+    // --- 初期化処理 ---
+    const initializeGame = () => {
+        // 選手入力フィールドを初期状態で生成
+        createPlayerInputFields(elements.awayPlayersDiv, 'away');
+        createPlayerInputFields(elements.homePlayersDiv, 'home');
+
+        // UI初期表示設定
+        elements.gameSection.classList.add('hidden');
+        elements.historySection.classList.add('hidden');
+        elements.clearHistoryButton.classList.add('hidden');
+        elements.backToSetupButton.classList.add('hidden');
+
+        // 初回スコアボード更新
+        setTeamsForInning(); // 初期チーム名表示のため
         updateScoreboard();
+    };
 
-        // Check for game over condition
-        if (currentInning > maxInnings && !isTopInning && gameData.away.score !== gameData.home.score) {
-            endGame();
-        } else if (currentInning > maxInnings && isTopInning && gameData.home.score > gameData.away.score) {
-            // Home team wins if leading in bottom of last inning
-            endGame();
-        }
-    }
-
-    // Function to end the game
-    function endGame() {
-        let winner = "引き分け";
-        if (gameData.away.score > gameData.home.score) {
-            winner = gameData.away.name;
-        } else if (gameData.home.score > gameData.away.score) {
-            winner = gameData.home.name;
-        }
-
-        const gameSummary = {
-            awayTeam: gameData.away.name,
-            homeTeam: gameData.home.name,
-            awayScore: gameData.away.score,
-            homeScore: gameData.home.score,
-            winner: winner,
-            innings: currentInning,
-            actions: [...currentGameActions] // Copy current game actions
-        };
-        gameHistory.push(gameSummary);
-        saveGameHistory();
-        renderGameHistory();
-
-        alert(`試合終了！\n${gameData.away.name}: ${gameData.away.score}点\n${gameData.home.name}: ${gameData.home.score}点\n勝者: ${winner}`);
-        resetGame(); // Optionally reset game after ending
-    }
-
-    // Function to reset the entire game
-    function resetGame() {
-        addGameAction("試合リセット"); // Log reset as the last action of the game attempt
-        currentInning = 1;
-        isTopInning = true;
-        awayTeamScore = 0;
-        homeTeamScore = 0;
-        balls = 0;
-        strikes = 0;
-        outs = 0;
-        bases = { first: false, second: false, third: false };
-        currentBatterIndex = 0;
-        currentGameActions = []; // Clear current game actions
-
-        gameData = {
-            away: {
-                name: awayTeamNameInput.value || 'ビジターズ',
-                score: 0,
-                hits: 0,
-                errors: 0,
-                innings: { 1: 0 },
-                players: awayTeamPlayers.map(p => ({ ...p, atBats: 0, hits: 0, walks: 0, hbp: 0, sacrifices: 0 }))
-            },
-            home: {
-                name: homeTeamNameInput.value || 'ホームズ',
-                score: 0,
-                hits: 0,
-                errors: 0,
-                innings: { 1: 0 },
-                players: homeTeamPlayers.map(p => ({ ...p, atBats: 0, hits: 0, walks: 0, hbp: 0, sacrifices: 0 }))
-            }
-        };
-
-        // Reset scoreboard display
-        setupScoreboardInnings(); // Re-render inning headers and cells
-        updateScoreboard();
-        populateBatterSelect();
-        updatePlayerStatsTables();
-
-        // Show setup section and hide scoreboard
-        setupSection.classList.remove('hidden');
-        scoreboardSection.classList.add('hidden');
-        bigCountSection.classList.add('hidden');
-        historySection.classList.remove('hidden'); // Keep history visible
-    }
-
-    // Function to render game history
-    function renderGameHistory() {
-        gameHistoryList.innerHTML = '';
-        if (gameHistory.length === 0) {
-            gameHistoryList.innerHTML = '<li class="no-history">まだ試合履歴がありません。</li>';
-            return;
-        }
-        gameHistory.forEach((game, index) => {
-            const listItem = document.createElement('li');
-            const winnerText = game.winner === "引き分け" ? "引き分け" : `${game.winner}の勝利`;
-            listItem.innerHTML = `
-                <strong>試合 #${index + 1}: ${game.awayTeam} ${game.awayScore} - ${game.homeTeam} ${game.homeScore}</strong> (${game.innings}イニング, ${winnerText})
-                <details>
-                    <summary>詳細を見る</summary>
-                    <ul class="game-actions-list">
-                        ${game.actions.map(action => `<li>${action}</li>`).join('')}
-                    </ul>
-                </details>
-            `;
-            gameHistoryList.appendChild(listItem);
-        });
-    }
-
-    // --- Event Listeners ---
-
-    // Populate player inputs when player count changes
-    playerCountInput.addEventListener('change', populatePlayerInputs);
-    playerCountInput.addEventListener('keyup', populatePlayerInputs); // Also on keyup for immediate feedback
-
-    // Start Game Button
-    startGameButton.addEventListener('click', () => {
-        const awayName = awayTeamNameInput.value.trim();
-        const homeName = homeTeamNameInput.value.trim();
-        const playerCount = parseInt(playerCountInput.value);
-
-        if (!awayName || !homeName || isNaN(playerCount) || playerCount < 1) {
-            alert('チーム名と選手人数を正しく入力してください。');
-            return;
-        }
-
-        // Collect player names
-        awayTeamPlayers = [];
-        for (let i = 1; i <= playerCount; i++) {
-            const playerName = document.getElementById(`awayPlayer${i}`).value.trim() || `ビジター${i}`;
-            awayTeamPlayers.push({ name: playerName, atBats: 0, hits: 0, walks: 0, hbp: 0, sacrifices: 0 });
-        }
-
-        homeTeamPlayers = [];
-        for (let i = 1; i <= playerCount; i++) {
-            const playerName = document.getElementById(`homePlayer${i}`).value.trim() || `ホーム${i}`;
-            homeTeamPlayers.push({ name: playerName, atBats: 0, hits: 0, walks: 0, hbp: 0, sacrifices: 0 });
-        }
-
-        // Initialize gameData with collected info
-        gameData.away.name = awayName;
-        gameData.away.players = awayTeamPlayers;
-        gameData.home.name = homeName;
-        gameData.home.players = homeTeamPlayers;
-
-        // Reset and prepare game state
-        currentInning = 1;
-        isTopInning = true;
-        gameData.away.score = 0;
-        gameData.away.hits = 0;
-        gameData.away.errors = 0;
-        gameData.away.innings = { 1: 0 };
-        gameData.home.score = 0;
-        gameData.home.hits = 0;
-        gameData.home.errors = 0;
-        gameData.home.innings = { 1: 0 };
-        balls = 0;
-        strikes = 0;
-        outs = 0;
-        clearBases();
-        currentBatterIndex = 0;
-        currentGameActions = []; // Start new game actions log
-
-        setupScoreboardInnings(); // Setup for 9 innings initially
-        updateScoreboard();
-        populateBatterSelect();
-        updatePlayerStatsTables();
-
-        setupSection.classList.add('hidden');
-        scoreboardSection.classList.remove('hidden');
-        historySection.classList.add('hidden'); // Hide history during game
-    });
-
-    // Batter Action Buttons
-    batterOutButton.addEventListener('click', () => {
-        const player = isTopInning ? gameData.away.players[currentBatterIndex] : gameData.home.players[currentBatterIndex];
-        player.atBats++; // Count as at-bat
-        addOut();
-        resetCount(); // Reset count for next batter
-        currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
-        populateBatterSelect();
-        updatePlayerStatsTables();
-        addGameAction(`アウト！`);
-    });
-
-    batterSingleButton.addEventListener('click', () => {
-        const player = isTopInning ? gameData.away.players[currentBatterIndex] : gameData.home.players[currentBatterIndex];
-        player.atBats++;
-        player.hits++;
-        if (isTopInning) gameData.away.hits++; else gameData.home.hits++;
-        moveRunners('single');
-        resetCount();
-        currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
-        populateBatterSelect();
-        updatePlayerStatsTables();
-        addGameAction(`単打！`);
-    });
-
-    batterDoubleButton.addEventListener('click', () => {
-        const player = isTopInning ? gameData.away.players[currentBatterIndex] : gameData.home.players[currentBatterIndex];
-        player.atBats++;
-        player.hits++;
-        if (isTopInning) gameData.away.hits++; else gameData.home.hits++;
-        moveRunners('double');
-        resetCount();
-        currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
-        populateBatterSelect();
-        updatePlayerStatsTables();
-        addGameAction(`二塁打！`);
-    });
-
-    batterTripleButton.addEventListener('click', () => {
-        const player = isTopInning ? gameData.away.players[currentBatterIndex] : gameData.home.players[currentBatterIndex];
-        player.atBats++;
-        player.hits++;
-        if (isTopInning) gameData.away.hits++; else gameData.home.hits++;
-        moveRunners('triple');
-        resetCount();
-        currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
-        populateBatterSelect();
-        updatePlayerStatsTables();
-        addGameAction(`三塁打！`);
-    });
-
-    batterHomeRunButton.addEventListener('click', () => {
-        const player = isTopInning ? gameData.away.players[currentBatterIndex] : gameData.home.players[currentBatterIndex];
-        player.atBats++;
-        player.hits++;
-        if (isTopInning) gameData.away.hits++; else gameData.home.hits++;
-        moveRunners('homerun'); // This will also handle scoring the batter and existing runners
-        resetCount();
-        currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
-        populateBatterSelect();
-        updatePlayerStatsTables();
-        addGameAction(`ホームラン！`);
-    });
-
-    batterWalkButton.addEventListener('click', () => {
-        const player = isTopInning ? gameData.away.players[currentBatterIndex] : gameData.home.players[currentBatterIndex];
-        player.walks++; // Not an at-bat
-        moveRunners('walk');
-        resetCount();
-        currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
-        populateBatterSelect();
-        updatePlayerStatsTables();
-        addGameAction(`四球で出塁`);
-    });
-
-    batterHBPButton.addEventListener('click', () => {
-        const player = isTopInning ? gameData.away.players[currentBatterIndex] : gameData.home.players[currentBatterIndex];
-        player.hbp++; // Not an at-bat
-        moveRunners('hbp');
-        resetCount();
-        currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
-        populateBatterSelect();
-        updatePlayerStatsTables();
-        addGameAction(`死球で出塁`);
-    });
-
-    batterSacrificeButton.addEventListener('click', () => {
-        const player = isTopInning ? gameData.away.players[currentBatterIndex] : gameData.home.players[currentBatterIndex];
-        player.sacrifices++; // Not an at-bat, but still advances runner
-        // For simplicity, a sacrifice will advance all runners by one base, scoring if on 3rd
-        if (bases.third) { addRun(); bases.third = false; }
-        if (bases.second) { bases.third = true; bases.second = false; }
-        if (bases.first) { bases.second = true; bases.first = false; }
-        addOut(); // Sacrifice usually results in an out
-        resetCount();
-        currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
-        populateBatterSelect();
-        updatePlayerStatsTables();
-        addGameAction(`犠打/犠飛`);
-    });
-
-    batterErrorButton.addEventListener('click', () => {
-        const player = isTopInning ? gameData.away.players[currentBatterIndex] : gameData.home.players[currentBatterIndex];
-        // Error is not an at-bat, but batter reaches base
-        addError();
-        moveRunners('error'); // Batter reaches first on error
-        resetCount();
-        currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
-        populateBatterSelect();
-        updatePlayerStatsTables();
-        addGameAction(`エラーで出塁`);
-    });
-
-
-    // Other Controls
-    addRunButton.addEventListener('click', addRun);
-    subtractRunButton.addEventListener('click', subtractRun);
-    addErrorButton.addEventListener('click', addError);
-    subtractErrorButton.addEventListener('click', subtractError);
-    clearBasesButton.addEventListener('click', clearBases);
-
-    addBallButton.addEventListener('click', () => {
-        balls++;
-        if (balls >= 4) {
-            addGameAction(`四球 (ボールカウントが上限に達しました)`);
-            moveRunners('walk'); // Batter gets a walk, runners advance
-            resetCount();
-            currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
-            populateBatterSelect();
-            updatePlayerStatsTables();
-        } else {
-            addGameAction(`ボール追加`);
-        }
-        updateScoreboard();
-    });
-
-    addStrikeButton.addEventListener('click', () => {
-        strikes++;
-        if (strikes >= 3) {
-            addGameAction(`三振 (ストライクカウントが上限に達しました)`);
-            addOut();
-            resetCount();
-            currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
-            populateBatterSelect();
-            updatePlayerStatsTables();
-        } else {
-            addGameAction(`ストライク追加`);
-        }
-        updateScoreboard();
-    });
-    resetCountButton.addEventListener('click', resetCount);
-
-    nextInningButton.addEventListener('click', nextInning);
-    switchSidesButton.addEventListener('click', switchSides);
-    endGameButton.addEventListener('click', endGame);
-    resetGameButton.addEventListener('click', resetGame);
-
-    // Dynamic button for big count view
-    const inningGameControls = document.querySelector('.inning-game-controls .button-grid-2col');
-    showBigCountButton = document.createElement('button');
-    showBigCountButton.id = 'showBigCountButton';
-    showBigCountButton.classList.add('btn', 'btn-secondary');
-    showBigCountButton.textContent = 'カウント大画面';
-    showBigCountButton.addEventListener('click', () => {
-        scoreboardSection.classList.add('hidden');
-        bigCountSection.classList.remove('hidden');
-        updateScoreboard(); // Ensure big count values are updated
-    });
-    inningGameControls.appendChild(showBigCountButton);
-
-    backToScoreboardButton.addEventListener('click', () => {
-        bigCountSection.classList.add('hidden');
-        scoreboardSection.classList.remove('hidden');
-    });
-
-    clearHistoryButton.addEventListener('click', () => {
-        if (confirm('全ての試合履歴を削除してもよろしいですか？')) {
-            gameHistory = [];
-            saveGameHistory();
-            renderGameHistory();
-            alert('試合履歴がクリアされました。');
-        }
-    });
-
-    // Big Count Controls Event Listeners
-    bigBallsPlusBtn.addEventListener('click', () => {
-        if (balls < 3) { // Max 3 balls before walk
-            balls++;
-            addGameAction(`大画面: ボール追加`);
-        } else {
-            balls = 0; // Reset for next count sequence
-            addGameAction(`大画面: ボール追加 (四球自動処理)`);
-            moveRunners('walk');
-            currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
-            populateBatterSelect();
-            updatePlayerStatsTables();
-        }
-        strikes = 0; // Reset strikes when ball or strike is added
-        updateScoreboard();
-    });
-
-    bigBallsMinusBtn.addEventListener('click', () => {
-        if (balls > 0) {
-            balls--;
-            addGameAction(`大画面: ボール削除`);
-        }
-        updateScoreboard();
-    });
-
-    bigStrikesPlusBtn.addEventListener('click', () => {
-        if (strikes < 2) { // Max 2 strikes before strikeout
-            strikes++;
-            addGameAction(`大画面: ストライク追加`);
-        } else {
-            strikes = 0; // Reset for next count sequence
-            addGameAction(`大画面: ストライク追加 (三振自動処理)`);
-            addOut();
-            currentBatterIndex = (currentBatterIndex + 1) % (isTopInning ? gameData.away.players.length : gameData.home.players.length);
-            populateBatterSelect();
-            updatePlayerStatsTables();
-        }
-        balls = 0; // Reset balls when ball or strike is added
-        updateScoreboard();
-    });
-
-    bigStrikesMinusBtn.addEventListener('click', () => {
-        if (strikes > 0) {
-            strikes--;
-            addGameAction(`大画面: ストライク削除`);
-        }
-        updateScoreboard();
-    });
-
-    bigOutsPlusBtn.addEventListener('click', () => {
-        addOut(); // Uses existing addOut logic which handles 3 outs
-        updateScoreboard();
-        // No need to reset balls/strikes here, addOut already handles it via handleThreeOuts
-    });
-
-    bigOutsMinusBtn.addEventListener('click', () => {
-        if (outs > 0) {
-            outs--;
-            addGameAction(`大画面: アウト削除`);
-        }
-        updateScoreboard();
-    });
-
-    bigCountResetBtn.addEventListener('click', () => {
-        resetCount(); // Resets balls and strikes
-        addGameAction(`大画面: カウントリセット`);
-    });
-
-    // --- Initialization ---
-    populatePlayerInputs(); // Initial population of player inputs
-    loadGameHistory(); // Load existing game history
+    initializeGame();
 });
